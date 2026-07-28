@@ -1,25 +1,25 @@
-const esbuild = require('esbuild');
-const fs = require('fs');
-const path = require('path');
-const sass = require('sass');
-const postcss = require('postcss');
-const autoprefixer = require('autoprefixer');
-const cssnano = require('cssnano');
-const tailwindcss = require('tailwindcss');
-const cssSort = require('css-declaration-sorter');
-const pug = require('pug');
-const chokidar = require('chokidar');
-const browserSync = require('browser-sync');
-const boxen = require('boxen');
-const ftp = require('basic-ftp');
-const colors = require('ansi-colors');
-const logSymbols = require('log-symbols');
-const chalk = require('chalk');
-const Table = require('cli-table3');
-const ora = require('ora');
+const esbuild = require("esbuild");
+const fs = require("fs");
+const path = require("path");
+const sass = require("sass");
+const postcss = require("postcss");
+const autoprefixer = require("autoprefixer");
+const cssnano = require("cssnano");
+const tailwindcss = require("tailwindcss");
+const cssSort = require("css-declaration-sorter");
+const pug = require("pug");
+const chokidar = require("chokidar");
+const browserSync = require("browser-sync");
+const boxen = require("boxen");
+const ftp = require("basic-ftp");
+const colors = require("ansi-colors");
+const logSymbols = require("log-symbols");
+const chalk = require("chalk");
+const Table = require("cli-table3");
+const ora = require("ora");
 
 // Helper function to ensure stdin stays in raw mode
-function ensureRawStdin () {
+function ensureRawStdin() {
 	const stdin = process.stdin;
 	if (!stdin) return;
 	if (stdin.isTTY) {
@@ -29,22 +29,24 @@ function ensureRawStdin () {
 }
 
 // Helper function to create spinners with quiet mode support
-function createSpinner (text) {
-	const quietMode = process.argv.includes('--quiet') || process.env.NODE_ENV === 'production';
+function createSpinner(text) {
+	const quietMode = process.argv.includes("--quiet") || process.env.NODE_ENV === "production";
 
 	const spinner = ora({
 		text: text,
 		isEnabled: !quietMode,
 		isSilent: quietMode, // Use isSilent to completely suppress output in quiet mode
 		discardStdin: false, // CRITICAL: prevent ora from pausing stdin
-		stream: process.stdout // explicit stream
+		stream: process.stdout, // explicit stream
 	});
 
 	// Override succeed and fail methods to handle quiet mode properly
 	const originalSucceed = spinner.succeed.bind(spinner);
 	const originalFail = spinner.fail.bind(spinner);
 	const originalStop = spinner.stop.bind(spinner);
-	const originalStopAndPersist = spinner.stopAndPersist ? spinner.stopAndPersist.bind(spinner) : null;
+	const originalStopAndPersist = spinner.stopAndPersist
+		? spinner.stopAndPersist.bind(spinner)
+		: null;
 
 	spinner.succeed = function (message) {
 		if (quietMode) {
@@ -82,15 +84,15 @@ function createSpinner (text) {
 }
 
 // Read configuration files
-const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
-const pagesConfig = JSON.parse(fs.readFileSync('pages.json', 'utf8'));
+const config = JSON.parse(fs.readFileSync("config.json", "utf8"));
+const pagesConfig = JSON.parse(fs.readFileSync("pages.json", "utf8"));
 let ftpConfig = null;
 
 // Load FTP config if it exists
 try {
-	ftpConfig = JSON.parse(fs.readFileSync('config-ftp.json', 'utf8'));
+	ftpConfig = JSON.parse(fs.readFileSync("config-ftp.json", "utf8"));
 } catch (error) {
-	console.log(colors.yellow('⚠️  FTP config not found. FTP deployment disabled.'));
+	console.log(colors.yellow("⚠️  FTP config not found. FTP deployment disabled."));
 }
 
 // Build options - Default to dev mode with watch and sourcemaps
@@ -109,13 +111,13 @@ const buildStats = {
 	optimizations: {
 		minification: shouldMinify,
 		sourceMaps: isDev,
-		mode: isDev ? 'development' : 'production',
+		mode: isDev ? "development" : "production",
 		bundling: true,
-		treeshaking: shouldMinify
-	}
+		treeshaking: shouldMinify,
+	},
 };
 
-function trackTask (name, fn) {
+function trackTask(name, fn) {
 	return async (...args) => {
 		const start = Date.now();
 		try {
@@ -130,105 +132,109 @@ function trackTask (name, fn) {
 }
 
 // Beautiful logging system with quiet mode support
-function logBeautiful (type, title, message = '', details = null) {
-	const quietMode = process.argv.includes('--quiet');
-	const isVerbose = process.argv.includes('--verbose');
+function logBeautiful(type, title, message = "", details = null) {
+	const quietMode = process.argv.includes("--quiet");
+	const isVerbose = process.argv.includes("--verbose");
 
 	// In quiet mode, only show errors and critical info
-	if (quietMode && !['error', 'warning'].includes(type)) {
+	if (quietMode && !["error", "warning"].includes(type)) {
 		return;
 	}
 
-	const timestamp = isVerbose ? colors.gray(`[${new Date().toLocaleTimeString()}]`) : '';
+	const timestamp = isVerbose ? colors.gray(`[${new Date().toLocaleTimeString()}]`) : "";
 	let icon, titleColor, messageColor;
 
 	switch (type) {
-		case 'success':
-			icon = colors.green('✓');
+		case "success":
+			icon = colors.green("✓");
 			titleColor = colors.green;
 			messageColor = colors.white;
 			break;
-		case 'error':
-			icon = colors.red('✗');
+		case "error":
+			icon = colors.red("✗");
 			titleColor = colors.red;
 			messageColor = colors.white;
 			break;
-		case 'info':
-			icon = colors.blue('ℹ');
+		case "info":
+			icon = colors.blue("ℹ");
 			titleColor = colors.blue;
 			messageColor = colors.white;
 			break;
-		case 'warning':
-			icon = colors.yellow('⚠');
+		case "warning":
+			icon = colors.yellow("⚠");
 			titleColor = colors.yellow;
 			messageColor = colors.white;
 			break;
-		case 'start':
-			icon = colors.cyan('▶');
+		case "start":
+			icon = colors.cyan("▶");
 			titleColor = colors.cyan;
 			messageColor = colors.white;
 			break;
 		default:
-			icon = colors.white('•');
+			icon = colors.white("•");
 			titleColor = colors.white;
 			messageColor = colors.gray;
 	}
 
-	const timestampStr = timestamp ? `${timestamp} ` : '';
-	console.log(`${timestampStr}${icon} ${titleColor(title)}${message ? `: ${messageColor(message)}` : ''}`);
+	const timestampStr = timestamp ? `${timestamp} ` : "";
+	console.log(
+		`${timestampStr}${icon} ${titleColor(title)}${message ? `: ${messageColor(message)}` : ""}`
+	);
 
 	if (details && isVerbose) {
-		console.log(`${' '.repeat(12)}${colors.gray(details)}`);
+		console.log(`${" ".repeat(12)}${colors.gray(details)}`);
 	}
 }
 
-
 // Show optimized build stats with enhanced boxen layout
-function showBuildStats () {
+function showBuildStats() {
 	if (Object.keys(buildStats.tasks).length === 0) return;
 
 	const totalTime = buildStats.end - buildStats.start;
 	const buildDate = new Date();
-	const buildTimeStr = buildDate.toLocaleTimeString('en-US', {
+	const buildTimeStr = buildDate.toLocaleTimeString("en-US", {
 		hour12: false,
-		hour: '2-digit',
-		minute: '2-digit',
-		second: '2-digit'
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
 	});
 
 	// Compact performance summary
-	let perfSummary = '';
-	let envSummary = '';
+	let perfSummary = "";
+	let envSummary = "";
 
 	// Build performance data in compact format
 	const sortedTasks = Object.entries(buildStats.tasks).sort((a, b) => b[1] - a[1]);
 	const topTasks = sortedTasks.slice(0, 4); // Show top 4 tasks only
 
-	perfSummary += colors.bold(colors.white('⚡ Performance\n'));
+	perfSummary += colors.bold(colors.white("⚡ Performance\n"));
 	topTasks.forEach(([task, time]) => {
 		const percentage = ((time / totalTime) * 100).toFixed(1);
 		const barLength = Math.max(1, Math.floor(percentage * 0.15));
-		const bar = colors.cyan('█'.repeat(barLength)) + colors.gray('░'.repeat(Math.max(0, 12 - barLength)));
+		const bar =
+			colors.cyan("█".repeat(barLength)) + colors.gray("░".repeat(Math.max(0, 12 - barLength)));
 		const taskName = task.substring(0, 14).padEnd(14);
-		const timeText = colors.yellow(time + 'ms');
-		const percentText = colors.gray('(' + percentage + '%)');
+		const timeText = colors.yellow(time + "ms");
+		const percentText = colors.gray("(" + percentage + "%)");
 
 		perfSummary += `  ${colors.white(taskName)} ${bar} ${timeText} ${percentText}\n`;
 	});
 
 	// Create minimal build completion box
 	const buildMessage = boxen(
-		`${colors.green('✓ Build Completed')}\n\n` +
-		`${colors.bold(colors.white('time:'))} ${colors.yellow(totalTime + 'ms')}\n` +
-		`${colors.bold(colors.white('finished:'))} ${colors.gray(buildTimeStr)}\n\n` +
-		perfSummary + '\n' + envSummary,
+		`${colors.green("✓ Build Completed")}\n\n` +
+			`${colors.bold(colors.white("time:"))} ${colors.yellow(totalTime + "ms")}\n` +
+			`${colors.bold(colors.white("finished:"))} ${colors.gray(buildTimeStr)}\n\n` +
+			perfSummary +
+			"\n" +
+			envSummary,
 		{
 			padding: { top: 0, left: 1, right: 1, bottom: 0 },
 			margin: { top: 0, left: 0, right: 0, bottom: 1 },
-			borderStyle: 'single',
-			borderColor: 'cyan',
-			title: 'Performance',
-			titleAlignment: 'center'
+			borderStyle: "single",
+			borderColor: "cyan",
+			title: "Performance",
+			titleAlignment: "center",
 		}
 	);
 
@@ -240,15 +246,15 @@ function showBuildStats () {
 // FTP deployment with success tracking
 let lastSuccessfulBuild = {
 	js: false,
-	css: false
+	css: false,
 };
 
-function markBuildSuccess (type) {
+function markBuildSuccess(type) {
 	lastSuccessfulBuild[type] = true;
 	// Only show build success marking in verbose mode
-	const isVerbose = process.argv.includes('--verbose');
+	const isVerbose = process.argv.includes("--verbose");
 	if (isVerbose) {
-		logBeautiful('info', 'Build Success Marked', `${type.toUpperCase()} is ready for deployment`);
+		logBeautiful("info", "Build Success Marked", `${type.toUpperCase()} is ready for deployment`);
 	}
 }
 
@@ -263,7 +269,7 @@ let activeOperations = new Set();
 let isShuttingDown = false;
 
 // Utility functions
-function outputText (title = "Build Info", desc = "Build completed") {
+function outputText(title = "Build Info", desc = "Build completed") {
 	const boxedMessage = boxen(`\n${desc}\n`, {
 		padding: { top: 1, left: 4, right: 4, bottom: 1 },
 		title: title,
@@ -275,8 +281,8 @@ function outputText (title = "Build Info", desc = "Build completed") {
 	console.log(boxedMessage);
 }
 
-function buildFinish (buildTime, showUrls = false) {
-	const quietMode = process.argv.includes('--quiet');
+function buildFinish(buildTime, showUrls = false) {
+	const quietMode = process.argv.includes("--quiet");
 
 	if (quietMode && !showUrls) {
 		// Ultra-compact output for non-serve builds
@@ -284,47 +290,50 @@ function buildFinish (buildTime, showUrls = false) {
 	}
 
 	const displayBoxen = () => {
-		let message = `${colors.green('✓ Development Ready')}`;
+		let message = `${colors.green("✓ Development Ready")}`;
 
 		if (showUrls && bs && bs.active) {
 			// Get the actual ports from BrowserSync instance
-			const port = bs.getOption('port');
-			const uiOptions = bs.getOption('ui');
-			const uiPort = uiOptions && uiOptions.port ? uiOptions.port : (port + 1);
+			const port = bs.getOption("port");
+			const uiOptions = bs.getOption("ui");
+			const uiPort = uiOptions && uiOptions.port ? uiOptions.port : port + 1;
 
 			// Get local IP address
-			const { execSync } = require('child_process');
-			let localIP = 'localhost';
+			const { execSync } = require("child_process");
+			let localIP = "localhost";
 			try {
-				localIP = execSync("ifconfig | grep 'inet ' | grep -v 127.0.0.1 | awk '{print $2}' | head -1", { encoding: 'utf-8' }).trim();
+				localIP = execSync(
+					"ifconfig | grep 'inet ' | grep -v 127.0.0.1 | awk '{print $2}' | head -1",
+					{ encoding: "utf-8" }
+				).trim();
 			} catch (e) {
 				// Fallback if IP detection fails
-				localIP = 'localhost';
+				localIP = "localhost";
 			}
 
-			message += `\n\n${colors.bold(colors.white('🌍 Access URLs:'))}`;
-			message += `\nlocal: ${colors.cyan('http://localhost:' + port)}`;
-			if (localIP !== 'localhost') {
-				message += `\nexternal: ${colors.green('http://' + localIP + ':' + port)}`;
+			message += `\n\n${colors.bold(colors.white("🌍 Access URLs:"))}`;
+			message += `\nlocal: ${colors.cyan("http://localhost:" + port)}`;
+			if (localIP !== "localhost") {
+				message += `\nexternal: ${colors.green("http://" + localIP + ":" + port)}`;
 			}
-			message += `\nui: ${colors.cyan('http://localhost:' + uiPort)}`;
-			if (localIP !== 'localhost') {
-				message += `\nui external: ${colors.green('http://' + localIP + ':' + uiPort)}`;
+			message += `\nui: ${colors.cyan("http://localhost:" + uiPort)}`;
+			if (localIP !== "localhost") {
+				message += `\nui external: ${colors.green("http://" + localIP + ":" + uiPort)}`;
 			}
 		}
 
 		if (buildTime && !quietMode) {
-			message += `\n\nbuilt in ${colors.gray(buildTime + 'ms')}`;
+			message += `\n\nbuilt in ${colors.gray(buildTime + "ms")}`;
 		}
 
 		// Use minimal boxen display
 		const boxedMessage = boxen(message, {
 			padding: { top: 1, left: 1, right: 1, bottom: 1 },
 			margin: { top: 0, left: 0, right: 0, bottom: 1 },
-			borderStyle: 'single',
-			borderColor: 'green',
-			titleAlignment: 'center',
-			title: showUrls ? 'Server' : null
+			borderStyle: "single",
+			borderColor: "green",
+			titleAlignment: "center",
+			title: showUrls ? "Server" : null,
 		});
 
 		console.log(boxedMessage);
@@ -341,28 +350,32 @@ function buildFinish (buildTime, showUrls = false) {
 	if (showUrls) {
 		// Add delayed display to ensure proper console output
 		const displayWatchStatus = () => {
-			const watchMessage = `${colors.blue('🔍 Watch')} ${colors.white('monitoring files for changes')}\n${colors.gray('press')} ${colors.cyan('ctrl+c')} ${colors.gray('to exit')}`;
+			const watchMessage = `${colors.blue("🔍 Watch")} ${colors.white(
+				"monitoring files for changes"
+			)}\n${colors.gray("press")} ${colors.cyan("ctrl+c")} ${colors.gray("to exit")}`;
 
 			const watchBox = boxen(watchMessage, {
 				padding: { top: 0, left: 1, right: 1, bottom: 0 },
 				margin: { top: 0, left: 0, right: 0, bottom: 0 },
-				borderStyle: 'single',
-				borderColor: 'blue'
+				borderStyle: "single",
+				borderColor: "blue",
 			});
 
 			console.log(watchBox);
 
 			// Show auto-deploy status in boxen
-			if (typeof autoDeployMode !== 'undefined') {
-				const autoStatus = autoDeployMode ? colors.green('on') : colors.red('off');
-				const deployMessage = `${colors.cyan('🚀 Deploy')} ${colors.white('auto-deploy:')} ${autoStatus} ${colors.gray('(Press d)')}`;
+			if (typeof autoDeployMode !== "undefined") {
+				const autoStatus = autoDeployMode ? colors.green("on") : colors.red("off");
+				const deployMessage = `${colors.cyan("🚀 Deploy")} ${colors.white(
+					"auto-deploy:"
+				)} ${autoStatus} ${colors.gray("(Press d)")}`;
 
 				const deployBox = boxen(deployMessage, {
 					padding: { top: 0, left: 5, right: 5, bottom: 0 },
 					margin: { top: 1, left: 0, right: 0, bottom: 0 },
-					borderStyle: 'single',
-					borderColor: autoDeployMode ? 'green' : 'red',
-					title: autoDeployMode ? 'AUTO-DEPLOY' : 'MANUAL-DEPLOY'
+					borderStyle: "single",
+					borderColor: autoDeployMode ? "green" : "red",
+					title: autoDeployMode ? "AUTO-DEPLOY" : "MANUAL-DEPLOY",
 				});
 
 				console.log(deployBox);
@@ -379,7 +392,7 @@ function buildFinish (buildTime, showUrls = false) {
 }
 
 // FTP Deployment Functions
-async function createFtpConnection () {
+async function createFtpConnection() {
 	if (!ftpConfig) {
 		console.log(logSymbols.error, "FTP config not loaded. Cannot create connection.");
 		return null;
@@ -403,40 +416,47 @@ async function createFtpConnection () {
 	}
 }
 
-function checkDistFolder () {
+function checkDistFolder() {
 	const folderName = ftpConfig?.deployment?.localFolder || "dist";
 	if (!fs.existsSync(folderName)) {
-		console.log(
-			"\n" + logSymbols.warning,
-			colors.bgRed("run `npm run build` first!.") + "\n"
-		);
+		console.log("\n" + logSymbols.warning, colors.bgRed("run `npm run build` first!.") + "\n");
 		return false;
 	}
 	return true;
 }
 
 // Compilation verification helper
-function verifyCompiledFiles (mappingKey) {
+function verifyCompiledFiles(mappingKey) {
 	const expectedFiles = {
-		styles: ['dist/css/main.min.css', 'dist/css/core.min.css'],
-		scripts: ['dist/js/main.min.js', 'dist/js/core.min.js'],
-		all: ['dist/css/main.min.css', 'dist/css/core.min.css', 'dist/js/main.min.js', 'dist/js/core.min.js']
+		styles: ["dist/css/main.min.css", "dist/css/core.min.css", "dist/css/fonts.min.css"],
+		scripts: ["dist/js/main.min.js", "dist/js/core.min.js"],
+		all: [
+			"dist/css/main.min.css",
+			"dist/css/core.min.css",
+			"dist/css/fonts.min.css",
+			"dist/js/main.min.js",
+			"dist/js/core.min.js",
+		],
 	};
 
 	const filesToCheck = expectedFiles[mappingKey] || [];
-	const missingFiles = filesToCheck.filter(file => !fs.existsSync(file));
+	const missingFiles = filesToCheck.filter((file) => !fs.existsSync(file));
 
 	if (missingFiles.length > 0) {
-		logBeautiful('warning', 'Compilation Verification Failed', `Missing compiled files: ${missingFiles.join(', ')}`);
+		logBeautiful(
+			"warning",
+			"Compilation Verification Failed",
+			`Missing compiled files: ${missingFiles.join(", ")}`
+		);
 		return false;
 	}
 
 	return true;
 }
 
-async function deployFiles (mappingKey) {
+async function deployFiles(mappingKey) {
 	// Track this operation for graceful shutdown
-	const operationId = Symbol('deploy');
+	const operationId = Symbol("deploy");
 	activeOperations.add(operationId);
 
 	let spinner = null;
@@ -448,20 +468,28 @@ async function deployFiles (mappingKey) {
 
 		const mapping = ftpConfig.deployment.mappings[mappingKey];
 		if (!mapping) {
-			logBeautiful('error', 'FTP Deployment Failed', `Mapping "${mappingKey}" not found in FTP config`);
+			logBeautiful(
+				"error",
+				"FTP Deployment Failed",
+				`Mapping "${mappingKey}" not found in FTP config`
+			);
 			return;
 		}
 
 		// Check if build was successful before deploying
-		const buildType = mappingKey === 'styles' ? 'css' : mappingKey === 'scripts' ? 'js' : null;
+		const buildType = mappingKey === "styles" ? "css" : mappingKey === "scripts" ? "js" : null;
 		if (buildType && !lastSuccessfulBuild[buildType]) {
-			logBeautiful('warning', 'Deployment Skipped', `${buildType.toUpperCase()} build not successful yet`);
+			logBeautiful(
+				"warning",
+				"Deployment Skipped",
+				`${buildType.toUpperCase()} build not successful yet`
+			);
 			return;
 		}
 
 		// Verify compiled files exist before deploying
 		if (!verifyCompiledFiles(mappingKey)) {
-			logBeautiful('warning', 'Deployment Skipped', 'Compiled files verification failed');
+			logBeautiful("warning", "Deployment Skipped", "Compiled files verification failed");
 			return;
 		}
 
@@ -470,7 +498,7 @@ async function deployFiles (mappingKey) {
 
 		const client = await createFtpConnection();
 		if (!client) {
-			if (spinner) spinner.fail('FTP connection failed');
+			if (spinner) spinner.fail("FTP connection failed");
 			return;
 		}
 
@@ -478,20 +506,36 @@ async function deployFiles (mappingKey) {
 
 		try {
 			const localPath = path.join(ftpConfig.deployment.localFolder, mapping.local);
-			const remotePath = path.join(ftpConfig.deployment.basePath, mapping.remote).replace(/\\/g, '/');
+			const remotePath = path
+				.join(ftpConfig.deployment.basePath, mapping.remote)
+				.replace(/\\/g, "/");
 
 			spinner.text = `Creating remote directory: ${remotePath}`;
 			await client.ensureDir(remotePath);
 
-			if (mapping.local === '.') {
+			if (mapping.local === ".") {
 				// Deploy all files from dist folder
 				spinner.text = `Uploading files from ${ftpConfig.deployment.localFolder}`;
-				await uploadDirectory(client, ftpConfig.deployment.localFolder, remotePath, mapping.exclude || [], null, spinner);
+				await uploadDirectory(
+					client,
+					ftpConfig.deployment.localFolder,
+					remotePath,
+					mapping.exclude || [],
+					null,
+					spinner
+				);
 			} else {
 				// Deploy specific folder
 				if (fs.existsSync(localPath)) {
 					spinner.text = `Uploading files from ${localPath}`;
-					await uploadDirectory(client, localPath, remotePath, mapping.exclude || [], null, spinner);
+					await uploadDirectory(
+						client,
+						localPath,
+						remotePath,
+						mapping.exclude || [],
+						null,
+						spinner
+					);
 				} else {
 					if (spinner) spinner.fail(`Local path does not exist: ${localPath}`);
 					return;
@@ -499,10 +543,20 @@ async function deployFiles (mappingKey) {
 			}
 
 			// Show single clean deployment success line
-			if (spinner) spinner.succeed(`${colors.cyan('🚀')} ${colors.white(mapping.description)} ${colors.green('deployed successfully')}`);
+			if (spinner)
+				spinner.succeed(
+					`${colors.cyan("🚀")} ${colors.white(mapping.description)} ${colors.green(
+						"deployed successfully"
+					)}`
+				);
 		} catch (error) {
 			// Show single clean deployment error line
-			if (spinner) spinner.fail(`${colors.red('✗')} ${colors.white(mapping.description)} ${colors.red('deployment failed:')} ${error.message}`);
+			if (spinner)
+				spinner.fail(
+					`${colors.red("✗")} ${colors.white(mapping.description)} ${colors.red(
+						"deployment failed:"
+					)} ${error.message}`
+				);
 			throw error;
 		} finally {
 			client.close();
@@ -515,16 +569,23 @@ async function deployFiles (mappingKey) {
 }
 
 // Utility function to format file size
-function formatFileSize (bytes) {
-	if (bytes === 0) return '0 B';
+function formatFileSize(bytes) {
+	if (bytes === 0) return "0 B";
 	const k = 1024;
-	const sizes = ['B', 'KB', 'MB', 'GB'];
+	const sizes = ["B", "KB", "MB", "GB"];
 	const i = Math.floor(Math.log(bytes) / Math.log(k));
-	return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+	return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
 }
 
 // Helper function to upload directory recursively
-async function uploadDirectory (client, localDir, remoteDir, excludePatterns = [], baseDir = null, spinner = null) {
+async function uploadDirectory(
+	client,
+	localDir,
+	remoteDir,
+	excludePatterns = [],
+	baseDir = null,
+	spinner = null
+) {
 	// Set baseDir for relative path calculation on first call
 	if (!baseDir) baseDir = localDir;
 
@@ -538,8 +599,8 @@ async function uploadDirectory (client, localDir, remoteDir, excludePatterns = [
 		const relativePath = path.relative(baseDir, localPath);
 
 		// Check if file should be excluded
-		const shouldExclude = excludePatterns.some(pattern => {
-			const regex = new RegExp(pattern.replace(/\*/g, '.*'));
+		const shouldExclude = excludePatterns.some((pattern) => {
+			const regex = new RegExp(pattern.replace(/\*/g, ".*"));
 			return regex.test(item.name);
 		});
 
@@ -562,7 +623,11 @@ async function uploadDirectory (client, localDir, remoteDir, excludePatterns = [
 				}
 
 				await client.uploadFrom(localPath, remotePath);
-				console.log(`${relativePath} - ${fileSize} - ${colors.green('✓')} ${colors.gray('→')} ${colors.cyan(remotePath)}`);
+				console.log(
+					`${relativePath} - ${fileSize} - ${colors.green("✓")} ${colors.gray("→")} ${colors.cyan(
+						remotePath
+					)}`
+				);
 
 				// Restart spinner if it was running
 				if (spinner) {
@@ -573,80 +638,84 @@ async function uploadDirectory (client, localDir, remoteDir, excludePatterns = [
 				if (spinner) {
 					spinner.stop();
 				}
-				console.log(`${relativePath} - ${fileSize} - ${colors.red('✗ ' + error.message)} ${colors.gray('→')} ${colors.cyan(remotePath)}`);
+				console.log(
+					`${relativePath} - ${fileSize} - ${colors.red("✗ " + error.message)} ${colors.gray(
+						"→"
+					)} ${colors.cyan(remotePath)}`
+				);
 				throw error;
 			}
 		}
 	}
 }
 
-async function deployStyles () {
+async function deployStyles() {
 	return await deployFiles("styles");
 }
 
-async function deployScripts () {
+async function deployScripts() {
 	return await deployFiles("scripts");
 }
 
-async function deployImages () {
+async function deployImages() {
 	return await deployFiles("images");
 }
 
-async function deployFonts () {
+async function deployFonts() {
 	return await deployFiles("fonts");
 }
 
-async function deployAll () {
+async function deployAll() {
 	return await deployFiles("all");
 }
 
 // Auto-deploy toggle function
-function toggleAutoDeploy () {
+function toggleAutoDeploy() {
 	autoDeployMode = !autoDeployMode;
-	const statusIcon = autoDeployMode ? colors.green('✓') : colors.red('✗');
-	const statusText = autoDeployMode ? colors.green('ON') : colors.red('OFF');
+	const statusIcon = autoDeployMode ? colors.green("✓") : colors.red("✗");
+	const statusText = autoDeployMode ? colors.green("ON") : colors.red("OFF");
 
 	// Show simple one-line toggle status
-	console.log(`${colors.cyan('🚀')} ${colors.white('Auto-Deploy:')} ${statusText} ${statusIcon}`);
+	console.log(`${colors.cyan("🚀")} ${colors.white("Auto-Deploy:")} ${statusText} ${statusIcon}`);
 
 	return Promise.resolve();
 }
 
 // Clean and setup directories - matches cleanDist from gulp
-function cleanDist () {
-	if (fs.existsSync('dist')) {
-		fs.rmSync('dist', { recursive: true, force: true });
+function cleanDist() {
+	if (fs.existsSync("dist")) {
+		fs.rmSync("dist", { recursive: true, force: true });
 	}
 
 	// Create directory structure
-	['dist', 'dist/js', 'dist/css', 'dist/img', 'dist/fonts'].forEach(dir => {
+	["dist", "dist/js", "dist/css", "dist/img", "dist/fonts"].forEach((dir) => {
 		fs.mkdirSync(dir, { recursive: true });
 	});
 }
 
-function cleanImage () {
-	if (fs.existsSync('dist/img')) {
-		fs.rmSync('dist/img', { recursive: true, force: true });
+function cleanImage() {
+	if (fs.existsSync("dist/img")) {
+		fs.rmSync("dist/img", { recursive: true, force: true });
 	}
-	fs.mkdirSync('dist/img', { recursive: true });
+	fs.mkdirSync("dist/img", { recursive: true });
 }
 
 // Copy assets - matches copy.js tasks
-function copyImage () {
-	const imageExtensions = ['svg', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'mp4'];
-	const srcDir = 'src/assets/img';
-	const destDir = 'dist/img';
+function copyImage() {
+	const imageExtensions = ["svg", "png", "jpg", "jpeg", "gif", "webp", "mp4"];
+	const srcDir = "src/assets/img";
+	const destDir = "dist/img";
 
 	if (!fs.existsSync(srcDir)) return;
 
-	function copyRecursive (src, dest) {
+	function copyRecursive(src, dest) {
 		if (!fs.existsSync(dest)) {
 			fs.mkdirSync(dest, { recursive: true });
 		}
 
 		const items = fs.readdirSync(src, { withFileTypes: true });
 
-		items.forEach(item => {
+		items.forEach((item) => {
 			const srcPath = path.join(src, item.name);
 			const destPath = path.join(dest, item.name);
 
@@ -664,19 +733,19 @@ function copyImage () {
 	copyRecursive(srcDir, destDir);
 }
 
-function copyFonts () {
-	config.font.forEach(fontGlob => {
-		const fontDir = fontGlob.replace('/**', '');
+function copyFonts() {
+	config.font.forEach((fontGlob) => {
+		const fontDir = fontGlob.replace("/**", "");
 		if (fs.existsSync(fontDir)) {
-			const destDir = 'dist/fonts';
+			const destDir = "dist/fonts";
 			if (!fs.existsSync(destDir)) {
 				fs.mkdirSync(destDir, { recursive: true });
 			}
 
-			function copyFontFiles (src, dest) {
+			function copyFontFiles(src, dest) {
 				const items = fs.readdirSync(src, { withFileTypes: true });
 
-				items.forEach(item => {
+				items.forEach((item) => {
 					const srcPath = path.join(src, item.name);
 					const destPath = path.join(dest, item.name);
 
@@ -696,190 +765,301 @@ function copyFonts () {
 	});
 }
 
-function copyFavicon () {
-	if (fs.existsSync('src/assets/favicon.ico')) {
-		fs.copyFileSync('src/assets/favicon.ico', 'dist/favicon.ico');
+function copyFavicon() {
+	if (fs.existsSync("src/assets/favicon.ico")) {
+		fs.copyFileSync("src/assets/favicon.ico", "dist/favicon.ico");
 	}
+}
+
+// Copy external assets listed in config.external, routed by file type:
+// .css -> dist/css, .js -> dist/js. Directories are walked recursively.
+function copyExternal() {
+	const destByExt = {
+		".css": "dist/css",
+		".js": "dist/js",
+	};
+
+	function copyFile(srcPath) {
+		const destDir = destByExt[path.extname(srcPath).toLowerCase()];
+		if (!destDir) {
+			logBeautiful("warning", "External skipped", `Unsupported file type: ${srcPath}`);
+			return;
+		}
+
+		if (!fs.existsSync(destDir)) {
+			fs.mkdirSync(destDir, { recursive: true });
+		}
+
+		fs.copyFileSync(srcPath, path.join(destDir, path.basename(srcPath)));
+	}
+
+	function copyDirectory(dir) {
+		fs.readdirSync(dir, { withFileTypes: true }).forEach((item) => {
+			const itemPath = path.join(dir, item.name);
+			if (item.isDirectory()) {
+				copyDirectory(itemPath);
+			} else if (destByExt[path.extname(item.name).toLowerCase()]) {
+				copyFile(itemPath);
+			}
+		});
+	}
+
+	(config.external || []).forEach((entry) => {
+		// Allow glob-style folder entries like "plugins/foo/**"
+		const srcPath = entry.replace(/\/\*\*$/, "");
+
+		if (!fs.existsSync(srcPath)) {
+			logBeautiful("warning", "External not found", `Skipping missing path: ${entry}`);
+			return;
+		}
+
+		if (fs.statSync(srcPath).isDirectory()) {
+			copyDirectory(srcPath);
+		} else {
+			copyFile(srcPath);
+		}
+	});
 }
 
 // Note: generateVirtualCoreJSContent function removed - now using direct concatenation in buildCoreJS
 
 // Core JS task - simple concatenation and minification without module systems
-const buildCoreJS = trackTask('Core JS', async function buildCoreJS () {
+const buildCoreJS = trackTask("Core JS", async function buildCoreJS() {
 	try {
 		// Read and concatenate all JS files in memory
-		let concatenatedContent = '';
+		let concatenatedContent = "";
 
 		// Read and concatenate all JS files
-		config.js.forEach(file => {
+		config.js.forEach((file) => {
 			const filePath = path.resolve(process.cwd(), file);
 			if (fs.existsSync(filePath)) {
 				concatenatedContent += `\n// === ${file} ===\n`;
-				concatenatedContent += fs.readFileSync(filePath, 'utf8');
-				concatenatedContent += '\n';
+				concatenatedContent += fs.readFileSync(filePath, "utf8");
+				concatenatedContent += "\n";
 			} else {
-				logBeautiful('warning', 'File not found', `Skipping missing file: ${file}`);
+				logBeautiful("warning", "File not found", `Skipping missing file: ${file}`);
 			}
 		});
 
 		// Use esbuild transform API for pure minification without module wrapping
 		const result = await esbuild.transform(concatenatedContent, {
 			minify: shouldMinify,
-			target: ['es5'], // ES5 for maximum compatibility
-			loader: 'js',
-			sourcemap: isDev
+			target: ["es5"], // ES5 for maximum compatibility
+			loader: "js",
+			sourcemap: isDev,
 		});
 
 		// Write the minified result directly
-		fs.writeFileSync('dist/js/core.min.js', result.code);
+		fs.writeFileSync("dist/js/core.min.js", result.code);
 
 		// Write source map if in dev mode
 		if (isDev && result.map) {
-			fs.writeFileSync('dist/js/core.min.js.map', result.map);
+			fs.writeFileSync("dist/js/core.min.js.map", result.map);
 		}
 
 		// Reduce verbose success messages during build
-		const isVerbose = process.argv.includes('--verbose');
+		const isVerbose = process.argv.includes("--verbose");
 		if (isVerbose) {
-			logBeautiful('success', 'Core JS built successfully', `Bundle created: dist/js/core.min.js`);
+			logBeautiful("success", "Core JS built successfully", `Bundle created: dist/js/core.min.js`);
 		}
-		markBuildSuccess('js'); // Mark core JS build as successful
+		markBuildSuccess("js"); // Mark core JS build as successful
 	} catch (error) {
-		logBeautiful('error', 'Core JS build failed', error.message);
+		logBeautiful("error", "Core JS build failed", error.message);
 		lastSuccessfulBuild.js = false;
 		throw error;
 	}
 });
 
 // Core CSS task - optimized with performance tracking
-const buildCoreCSS = trackTask('Core CSS', async function buildCoreCSS () {
+const buildCoreCSS = trackTask("Core CSS", async function buildCoreCSS() {
 	try {
 		// Fix path resolution by adding "./" prefix for relative paths
-		const cssEntry = config.css.map(file => {
-			if (file.startsWith('node_modules/') || file.startsWith('plugins/')) {
-				return `@import './${file}';`;
-			}
-			return `@import '${file}';`;
-		}).join('\n');
-		fs.writeFileSync('temp-core-css.css', cssEntry);
+		const cssEntry = config.css
+			.map((file) => {
+				if (file.startsWith("node_modules/") || file.startsWith("plugins/")) {
+					return `@import './${file}';`;
+				}
+				return `@import '${file}';`;
+			})
+			.join("\n");
+		fs.writeFileSync("temp-core-css.css", cssEntry);
 
 		await esbuild.build({
-			entryPoints: ['temp-core-css.css'],
+			entryPoints: ["temp-core-css.css"],
 			bundle: true,
 			minify: shouldMinify,
 			sourcemap: isDev,
-			outfile: 'dist/css/core.min.css',
+			outfile: "dist/css/core.min.css",
 			loader: {
-				'.css': 'css',
-				'.woff': 'file',
-				'.woff2': 'file',
-				'.ttf': 'file',
-				'.eot': 'file',
-				'.svg': 'file',
+				".css": "css",
+				".woff": "file",
+				".woff2": "file",
+				".ttf": "file",
+				".eot": "file",
+				".svg": "file",
 			},
-			external: ['../fonts/*'], // Ignore missing font files
+			external: ["../fonts/*"], // Ignore missing font files
 			allowOverwrite: true,
 		});
 
 		// Apply PostCSS processing to match gulp workflow
-		const cssContent = fs.readFileSync('dist/css/core.min.css', 'utf8');
+		const cssContent = fs.readFileSync("dist/css/core.min.css", "utf8");
 		const postcssResult = await postcss([
 			autoprefixer(),
 			cssnano(),
 			cssSort({ order: "concentric-css" }),
-		]).process(cssContent, { from: 'dist/css/core.min.css' });
+		]).process(cssContent, { from: "dist/css/core.min.css" });
 
 		// Write the processed CSS and add source map URL comment if in development mode
 		let finalCss = postcssResult.css;
 		if (isDev) {
 			// Remove any existing incorrect source map URL and add the correct one
-			finalCss = finalCss.replace(/\/\*# sourceMappingURL=.*?\*\/\s*$/g, '');
-			finalCss += '\n/*# sourceMappingURL=core.min.css.map */';
+			finalCss = finalCss.replace(/\/\*# sourceMappingURL=.*?\*\/\s*$/g, "");
+			finalCss += "\n/*# sourceMappingURL=core.min.css.map */";
 		}
-		fs.writeFileSync('dist/css/core.min.css', finalCss);
+		fs.writeFileSync("dist/css/core.min.css", finalCss);
 
 		// Cleanup
-		if (fs.existsSync('temp-core-css.css')) {
-			fs.unlinkSync('temp-core-css.css');
+		if (fs.existsSync("temp-core-css.css")) {
+			fs.unlinkSync("temp-core-css.css");
 		}
 
-		const isVerbose = process.argv.includes('--verbose');
+		const isVerbose = process.argv.includes("--verbose");
 		if (isVerbose) {
-			logBeautiful('success', 'Core CSS built successfully', `Bundle created: dist/css/core.min.css`);
+			logBeautiful(
+				"success",
+				"Core CSS built successfully",
+				`Bundle created: dist/css/core.min.css`
+			);
 		}
-		markBuildSuccess('css'); // Mark core CSS build as successful
+		markBuildSuccess("css"); // Mark core CSS build as successful
 	} catch (error) {
-		logBeautiful('error', 'Core CSS build failed', error.message);
+		logBeautiful("error", "Core CSS build failed", error.message);
 		lastSuccessfulBuild.css = false;
 		throw error;
 	}
 });
 
 // Main JS task - optimized with better error handling and performance tracking
-const buildMainJS = trackTask('Main JS', async function buildMainJS () {
+const buildMainJS = trackTask("Main JS", async function buildMainJS() {
 	try {
 		await esbuild.build({
-			entryPoints: ['src/js/main.js'],
+			entryPoints: ["src/js/main.js"],
 			bundle: true,
 			minify: shouldMinify,
-			sourcemap: isDev ? 'inline' : false,
-			outfile: 'dist/js/main.min.js',
-			format: 'iife',
-			globalName: 'App',
-			target: ['es2015'],
+			sourcemap: isDev ? "inline" : false,
+			outfile: "dist/js/main.min.js",
+			format: "iife",
+			globalName: "App",
+			target: ["es2015"],
 			allowOverwrite: true,
-			platform: 'browser',
-			mainFields: ['browser', 'module', 'main'],
+			platform: "browser",
+			mainFields: ["browser", "module", "main"],
 			// Better external handling for jQuery access
 			external: [],
 			define: {
-				'process.env.NODE_ENV': isDev ? '"development"' : '"production"'
+				"process.env.NODE_ENV": isDev ? '"development"' : '"production"',
 			},
-			resolveExtensions: ['.js', '.jsx', '.ts', '.tsx', '.json']
+			resolveExtensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
 		});
 
-		const isVerbose = process.argv.includes('--verbose');
+		const isVerbose = process.argv.includes("--verbose");
 		if (isVerbose) {
-			logBeautiful('success', 'Main JS built successfully', `Bundle created: dist/js/main.min.js`);
+			logBeautiful("success", "Main JS built successfully", `Bundle created: dist/js/main.min.js`);
 		}
-		markBuildSuccess('js');
+		markBuildSuccess("js");
 	} catch (error) {
-		logBeautiful('error', 'Main JS build failed', error.message);
+		logBeautiful("error", "Main JS build failed", error.message);
 		lastSuccessfulBuild.js = false;
 		throw error;
 	}
 });
 
+// Fonts CSS — riêng khỏi main.min.css (Gilroy + Material Symbols helpers)
+const buildFontsCSS = trackTask("Fonts CSS", async function buildFontsCSS() {
+	try {
+		const fontsEntry = "src/components/_core/_fonts.sass";
+		const result = sass.compile(fontsEntry, {
+			style: "expanded",
+			sourceMap: isDev,
+			sourceMapIncludeSources: true,
+			loadPaths: ["node_modules", "src/components", "src", ".", "plugins"],
+		});
+
+		const postcssResult = await postcss([
+			require("autoprefixer"),
+			...(shouldMinify ? [require("cssnano")] : []),
+			cssSort({ order: "concentric-css" }),
+		]).process(result.css, {
+			from: fontsEntry,
+			to: "dist/css/fonts.min.css",
+			map: isDev
+				? {
+						inline: false,
+						annotation: false,
+						prev: result.sourceMap ? JSON.stringify(result.sourceMap) : undefined,
+					}
+				: false,
+		});
+
+		let finalCss = postcssResult.css;
+		if (postcssResult.map && !finalCss.includes("/*# sourceMappingURL=")) {
+			finalCss += "\n/*# sourceMappingURL=fonts.min.css.map */";
+		}
+
+		fs.writeFileSync("dist/css/fonts.min.css", finalCss);
+		if (postcssResult.map) {
+			fs.writeFileSync("dist/css/fonts.min.css.map", postcssResult.map.toString());
+		}
+
+		const isVerbose = process.argv.includes("--verbose");
+		if (isVerbose) {
+			logBeautiful("success", "Fonts CSS built successfully", `CSS compiled: dist/css/fonts.min.css`);
+		}
+		markBuildSuccess("css");
+
+		if (bs && bs.active) {
+			bs.reload("*.css");
+		}
+	} catch (error) {
+		logBeautiful("error", "Fonts CSS build failed", error.message);
+		lastSuccessfulBuild.css = false;
+		throw error;
+	}
+});
+
 // SASS task - optimized with TailwindCSS JIT and better performance
-const buildSASS = trackTask('SASS', async function buildSASS () {
+const buildSASS = trackTask("SASS", async function buildSASS() {
 	try {
 		// Create SASS entry file that matches gulp sass task file pattern
 		const sassFiles = [
-			'src/components/_core/_**.sass',
-			'src/components/_core/**.sass',
-			'src/components/_tailwind/*.sass',
-			'src/components/_global/**.sass',
-			'src/components/**/**.sass'
+			"src/components/_core/_**.sass",
+			"src/components/_core/**.sass",
+			"src/components/_tailwind/*.sass",
+			"src/components/_global/**.sass",
+			"src/components/**/**.sass",
 		];
 
 		// Collect all SASS files matching the patterns
 		const collectSassFiles = (pattern) => {
-			const baseDir = pattern.split('/*')[0];
-			const isRecursive = pattern.includes('**');
+			const baseDir = pattern.split("/*")[0];
+			const isRecursive = pattern.includes("**");
 
 			if (!fs.existsSync(baseDir)) return [];
 
 			const files = [];
 
-			function scanDirectory (dir, recursive = false) {
+			function scanDirectory(dir, recursive = false) {
 				const items = fs.readdirSync(dir, { withFileTypes: true });
 
-				items.forEach(item => {
+				items.forEach((item) => {
 					const fullPath = path.join(dir, item.name);
 
 					if (item.isDirectory() && recursive) {
 						scanDirectory(fullPath, true);
-					} else if (item.name.endsWith('.sass') || item.name.endsWith('.scss')) {
+					} else if (item.name.endsWith(".sass") || item.name.endsWith(".scss")) {
+						// Fonts build riêng → dist/css/fonts.min.css
+						if (item.name === "_fonts.sass") return;
 						files.push(fullPath);
 					}
 				});
@@ -893,44 +1073,46 @@ const buildSASS = trackTask('SASS', async function buildSASS () {
 		const allSassFiles = sassFiles.flatMap(collectSassFiles);
 
 		// Create main SASS entry content (use SCSS syntax to avoid semicolon issues)
-		const sassImports = allSassFiles.map(file => {
-			// Normalize path separators to forward slashes for cross-platform compatibility
-			const normalizedPath = file.replace(/\\/g, '/');
+		const sassImports = allSassFiles
+			.map((file) => {
+				// Normalize path separators to forward slashes for cross-platform compatibility
+				const normalizedPath = file.replace(/\\/g, "/");
 
-			return `@import "${normalizedPath}";`;
-		}).join('\n');
+				return `@import "${normalizedPath}";`;
+			})
+			.join("\n");
 
 		// Compile SASS directly from string with proper load paths
 		const result = sass.compileString(sassImports, {
-			style: 'expanded',
+			style: "expanded",
 			sourceMap: true,
 			sourceMapIncludeSources: true, // Include source contents in the map
-			sourceMapRoot: path.resolve('.'), // Set predictable root path
+			sourceMapRoot: path.resolve("."), // Set predictable root path
 			loadPaths: [
-				'node_modules',
-				'src/components',
-				'src', // Add src as load path for absolute imports
-				'.', // Add current directory
-				'plugins' // Add plugins directory
+				"node_modules",
+				"src/components",
+				"src", // Add src as load path for absolute imports
+				".", // Add current directory
+				"plugins", // Add plugins directory
 			],
 		});
 
 		// Process with PostCSS (matches gulp postcss pipeline)
 		const postcssOptions = {
-			from: 'src/sass/main.scss', // Virtual entry path for better sourcemap labeling
-			to: 'dist/css/main.min.css',
+			from: "src/sass/main.scss", // Virtual entry path for better sourcemap labeling
+			to: "dist/css/main.min.css",
 			map: {
 				inline: false,
 				annotation: false, // Disable automatic annotation to keep manual one accurate
-				prev: result.sourceMap ? JSON.stringify(result.sourceMap) : undefined // Chain Sass sourcemap
+				prev: result.sourceMap ? JSON.stringify(result.sourceMap) : undefined, // Chain Sass sourcemap
 			},
 		};
 
 		const postcssResult = await postcss([
-			tailwindcss('./tailwind.config.js'),
-			require('autoprefixer'),
-			require('postcss-import'),
-			...(shouldMinify ? [require('cssnano')] : []),
+			tailwindcss("./tailwind.config.js"),
+			require("autoprefixer"),
+			require("postcss-import"),
+			...(shouldMinify ? [require("cssnano")] : []),
 			cssSort({ order: "concentric-css" }),
 		]).process(result.css, postcssOptions);
 
@@ -938,66 +1120,66 @@ const buildSASS = trackTask('SASS', async function buildSASS () {
 		let finalCss = postcssResult.css;
 
 		// Add source map URL comment if not already present
-		if (postcssResult.map && !finalCss.includes('/*# sourceMappingURL=')) {
-			finalCss += '\n/*# sourceMappingURL=main.min.css.map */';
+		if (postcssResult.map && !finalCss.includes("/*# sourceMappingURL=")) {
+			finalCss += "\n/*# sourceMappingURL=main.min.css.map */";
 		}
 
-		fs.writeFileSync('dist/css/main.min.css', finalCss);
+		fs.writeFileSync("dist/css/main.min.css", finalCss);
 
 		if (postcssResult.map) {
-			fs.writeFileSync('dist/css/main.min.css.map', postcssResult.map.toString());
+			fs.writeFileSync("dist/css/main.min.css.map", postcssResult.map.toString());
 		}
 
-		const isVerbose = process.argv.includes('--verbose');
+		const isVerbose = process.argv.includes("--verbose");
 		if (isVerbose) {
-			logBeautiful('success', 'SASS built successfully', `CSS compiled: dist/css/main.min.css`);
+			logBeautiful("success", "SASS built successfully", `CSS compiled: dist/css/main.min.css`);
 		}
-		markBuildSuccess('css');
+		markBuildSuccess("css");
 
 		// Trigger BrowserSync reload if in serve mode
 		if (bs && bs.active) {
-			bs.reload('*.css');
+			bs.reload("*.css");
 		}
-
 	} catch (error) {
-		logBeautiful('error', 'SASS build failed', error.message);
+		logBeautiful("error", "SASS build failed", error.message);
 		lastSuccessfulBuild.css = false;
 		throw error;
 	}
 });
 
 // Pug task - matches pug.js from gulp
-function buildPugTemplates () {
+function buildPugTemplates() {
 	try {
 		let filesToProcess = [];
 
 		if (pagesConfig.all || pagesConfig.pages.length === 0) {
 			// Build all .pug files in src/pages (excluding partials starting with _)
-			filesToProcess = fs.readdirSync('src/pages')
-				.filter(file => file.endsWith('.pug') && !file.startsWith('_'))
-				.map(file => path.join('src/pages', file));
+			filesToProcess = fs
+				.readdirSync("src/pages")
+				.filter((file) => file.endsWith(".pug") && !file.startsWith("_"))
+				.map((file) => path.join("src/pages", file));
 		} else {
 			// Build only enabled pages
 			filesToProcess = pagesConfig.pages
-				.filter(page => page.enabled)
-				.map(page => path.join('src/pages', page.src))
-				.filter(filePath => fs.existsSync(filePath));
+				.filter((page) => page.enabled)
+				.map((page) => path.join("src/pages", page.src))
+				.filter((filePath) => fs.existsSync(filePath));
 		}
 
-		filesToProcess.forEach(inputPath => {
+		filesToProcess.forEach((inputPath) => {
 			const fileName = path.basename(inputPath);
-			const outputPath = path.join('dist', fileName.replace('.pug', '.html'));
+			const outputPath = path.join("dist", fileName.replace(".pug", ".html"));
 
 			try {
 				const html = pug.renderFile(inputPath, {
 					pretty: "\t", // Match gulp pug task formatting
 					compileDebug: isDev,
-					basedir: 'src', // Allow absolute imports from src
+					basedir: "src", // Allow absolute imports from src
 				});
 
 				fs.writeFileSync(outputPath, html);
 				// Only show individual file compilation in verbose mode
-				const isVerbose = process.argv.includes('--verbose');
+				const isVerbose = process.argv.includes("--verbose");
 				if (isVerbose) {
 					console.log(`✅ Compiled: ${fileName} -> ${path.basename(outputPath)}`);
 				}
@@ -1006,65 +1188,66 @@ function buildPugTemplates () {
 			}
 		});
 
-		const isVerbose = process.argv.includes('--verbose');
+		const isVerbose = process.argv.includes("--verbose");
 		if (isVerbose) {
-			console.log('✅ Pug templates built successfully');
+			console.log("✅ Pug templates built successfully");
 		}
 
 		// Trigger BrowserSync reload if in serve mode
 		if (bs && bs.active) {
 			bs.reload();
 		}
-
 	} catch (error) {
-		console.error('❌ Pug build failed:', error);
+		console.error("❌ Pug build failed:", error);
 	}
 }
 
 // Main build function - optimized with beautiful logging and performance tracking
-async function build () {
+async function build() {
 	buildStats.start = Date.now();
 	buildStats.buildCount++;
 	buildStats.tasks = {}; // Reset task timings for this build
 
 	const isFirstBuild = buildStats.buildCount === 1;
-	const quietMode = process.argv.includes('--quiet');
+	const quietMode = process.argv.includes("--quiet");
 
 	if (!quietMode || isFirstBuild) {
-		logBeautiful('start', 'Starting ESBuild Process', `Mode: ${isDev ? 'Development' : 'Production'}`);
+		logBeautiful(
+			"start",
+			"Starting ESBuild Process",
+			`Mode: ${isDev ? "Development" : "Production"}`
+		);
 	}
 
-	const spinnerText = isFirstBuild ? '🚀 Initializing ESBuild process...' : '♾️ Rebuilding...';
+	const spinnerText = isFirstBuild ? "🚀 Initializing ESBuild process..." : "♾️ Rebuilding...";
 	const spinner = createSpinner(spinnerText).start();
 
 	try {
 		// Step 1: Clean dist directory
-		spinner.text = '🧹 Cleaning output directory...';
+		spinner.text = "🧹 Cleaning output directory...";
 		cleanDist();
 
 		// Step 2: Copy assets in parallel (optimized)
-		spinner.text = '📁 Copying assets (images, fonts, favicon)...';
+		spinner.text = "📁 Copying assets (images, fonts, favicon, external)...";
 		await Promise.all([
-			trackTask('Copy Images', async () => copyImage())(),
-			trackTask('Copy Fonts', async () => copyFonts())(),
-			trackTask('Copy Favicon', async () => copyFavicon())()
+			trackTask("Copy Images", async () => copyImage())(),
+			trackTask("Copy Fonts", async () => copyFonts())(),
+			trackTask("Copy Favicon", async () => copyFavicon())(),
+			trackTask("Copy External", async () => copyExternal())(),
 		]);
 
 		// Step 3: Build core assets in parallel
-		spinner.text = '⚙️ Building core assets (JS + CSS)...';
-		await Promise.all([
-			buildCoreJS(),
-			buildCoreCSS(),
-		]);
+		spinner.text = "⚙️ Building core assets (JS + CSS)...";
+		await Promise.all([buildCoreJS(), buildCoreCSS()]);
 
 		// Step 4: Build templates and main assets
-		spinner.text = '📜 Building Pug templates...';
-		await trackTask('Pug Templates', async () => buildPugTemplates())();
+		spinner.text = "📜 Building Pug templates...";
+		await trackTask("Pug Templates", async () => buildPugTemplates())();
 
-		spinner.text = '🎨 Compiling SASS + Tailwind CSS...';
-		await buildSASS();
+		spinner.text = "🎨 Compiling SASS + Tailwind CSS...";
+		await Promise.all([buildSASS(), buildFontsCSS()]);
 
-		spinner.text = '🔧 Bundling main JavaScript...';
+		spinner.text = "🔧 Bundling main JavaScript...";
 		await buildMainJS();
 
 		buildStats.end = Date.now();
@@ -1072,35 +1255,36 @@ async function build () {
 		buildStats.lastSuccessfulBuild = Date.now();
 
 		const isFirstBuild = buildStats.buildCount === 1;
-		const successMessage = isFirstBuild ?
-			`Build completed successfully in ${buildTime}ms` :
-			`Rebuilt in ${buildTime}ms`;
+		const successMessage = isFirstBuild
+			? `Build completed successfully in ${buildTime}ms`
+			: `Rebuilt in ${buildTime}ms`;
 
 		spinner.succeed(successMessage);
 
 		// Force show detailed stats on first build or when verbose
-		if (isFirstBuild || process.argv.includes('--verbose')) {
+		if (isFirstBuild || process.argv.includes("--verbose")) {
 			// Add small delay to ensure console output is not suppressed
 			setTimeout(() => {
 				showBuildStats();
 			}, 50);
-		} else if (!process.argv.includes('--quiet')) {
+		} else if (!process.argv.includes("--quiet")) {
 			// Quick rebuild notification
-			console.log(`${colors.green('✓')} ${colors.white('Ready')} ${colors.gray('(' + buildTime + 'ms)')}`);
+			console.log(
+				`${colors.green("✓")} ${colors.white("Ready")} ${colors.gray("(" + buildTime + "ms)")}`
+			);
 		}
 
 		return buildTime;
-
 	} catch (error) {
-		spinner.fail('Build failed!');
-		logBeautiful('error', 'Build Failed', error.message);
+		spinner.fail("Build failed!");
+		logBeautiful("error", "Build Failed", error.message);
 		throw error;
 	}
 }
 
 // Core build function (matches gulp core task)
-async function buildCore () {
-	console.log('🚀 Starting core build...');
+async function buildCore() {
+	console.log("🚀 Starting core build...");
 	const startTime = Date.now();
 
 	try {
@@ -1110,35 +1294,32 @@ async function buildCore () {
 		copyImage();
 		copyFonts();
 		copyFavicon();
+		copyExternal();
 
 		// Build core assets
-		await Promise.all([
-			buildCoreJS(),
-			buildCoreCSS(),
-		]);
+		await Promise.all([buildCoreJS(), buildCoreCSS()]);
 
 		const endTime = Date.now();
 		const buildTime = endTime - startTime;
 		console.log(`✅ Core build completed in ${buildTime}ms`);
 
 		buildFinish(buildTime);
-
 	} catch (error) {
-		console.error('❌ Core build failed:', error);
+		console.error("❌ Core build failed:", error);
 		throw error;
 	}
 }
 
 // Keyboard shortcuts functionality
-function initKeyboardShortcuts () {
+function initKeyboardShortcuts() {
 	if (!ftpConfig) {
-		console.log('⚠️  FTP config not loaded. Keyboard shortcuts for deployment disabled.');
+		console.log("⚠️  FTP config not loaded. Keyboard shortcuts for deployment disabled.");
 		return;
 	}
 
 	// Safety check for ftpConfig.shortcuts
-	if (!ftpConfig.shortcuts || typeof ftpConfig.shortcuts !== 'object') {
-		console.log('⚠️  FTP shortcuts config not found. Keyboard shortcuts disabled.');
+	if (!ftpConfig.shortcuts || typeof ftpConfig.shortcuts !== "object") {
+		console.log("⚠️  FTP shortcuts config not found. Keyboard shortcuts disabled.");
 		return;
 	}
 
@@ -1150,21 +1331,20 @@ function initKeyboardShortcuts () {
 	let shortcutsText = "";
 	Object.entries(ftpConfig.shortcuts).forEach(([key, config]) => {
 		// Use chalk for more reliable color support
-		shortcutsText += `  ${chalk.bgWhite.black(` ${key.toUpperCase()} `)} ${chalk.white(config.description)}\n`;
+		shortcutsText += `  ${chalk.bgWhite.black(` ${key.toUpperCase()} `)} ${chalk.white(
+			config.description
+		)}\n`;
 	});
 
 	console.log(
-		boxen(
-			shortcutsText,
-			{
-				title: 'Keyboard Shortcuts',
-				titleAlignment: 'center',
-				padding: { top: 1, left: 2, right: 2, bottom: 0 },
-				margin: { top: 1, left: 0, right: 0, bottom: 1 },
-				borderStyle: "single",
-				borderColor: "#FFB823",
-			}
-		)
+		boxen(shortcutsText, {
+			title: "Keyboard Shortcuts",
+			titleAlignment: "center",
+			padding: { top: 1, left: 2, right: 2, bottom: 0 },
+			margin: { top: 1, left: 0, right: 0, bottom: 1 },
+			borderStyle: "single",
+			borderColor: "#FFB823",
+		})
 	);
 
 	// Store the original SIGINT handler
@@ -1192,12 +1372,16 @@ function initKeyboardShortcuts () {
 
 		if (shortcut) {
 			// Provide immediate feedback to user
-			console.log(`${colors.cyan('⌨️')} ${colors.white('Command received:')} ${colors.yellow(shortcut.description)}`);
+			console.log(
+				`${colors.cyan("⌨️")} ${colors.white("Command received:")} ${colors.yellow(
+					shortcut.description
+				)}`
+			);
 
 			// Run task WITHOUT await - fire and forget to keep handler responsive
 			// The task itself is async and will complete in background
-			runTask(shortcut.action).catch(error => {
-				console.log(`${colors.red('✗')} ${colors.red('Command failed:')} ${error.message}`);
+			runTask(shortcut.action).catch((error) => {
+				console.log(`${colors.red("✗")} ${colors.red("Command failed:")} ${error.message}`);
 			});
 		}
 	});
@@ -1205,7 +1389,7 @@ function initKeyboardShortcuts () {
 	// Add a clean exit handler for SIGINT (Ctrl+C)
 	process.on("SIGINT", handleExit);
 
-	async function handleExit () {
+	async function handleExit() {
 		// Prevent multiple simultaneous exit calls
 		if (isShuttingDown) return;
 		isShuttingDown = true;
@@ -1214,22 +1398,29 @@ function initKeyboardShortcuts () {
 
 		// Wait for active operations to complete (with timeout)
 		if (activeOperations.size > 0) {
-			console.log(`${colors.yellow('⏳')} Waiting for ${activeOperations.size} operation(s) to complete...`);
+			console.log(
+				`${colors.yellow("⏳")} Waiting for ${activeOperations.size} operation(s) to complete...`
+			);
 
 			// Create a timeout promise
-			const timeout = new Promise(resolve => setTimeout(resolve, 5000));
+			const timeout = new Promise((resolve) => setTimeout(resolve, 5000));
 
 			// Wait for all operations or timeout (whichever comes first)
 			await Promise.race([
-				Promise.all(Array.from(activeOperations).map(() =>
-					// Each operation is tracked, we just wait a bit
-					new Promise(resolve => setTimeout(resolve, 100))
-				)),
-				timeout
+				Promise.all(
+					Array.from(activeOperations).map(
+						() =>
+							// Each operation is tracked, we just wait a bit
+							new Promise((resolve) => setTimeout(resolve, 100))
+					)
+				),
+				timeout,
 			]);
 
 			if (activeOperations.size > 0) {
-				console.log(`${colors.yellow('⚠️')} Forcing exit (${activeOperations.size} operation(s) still active)`);
+				console.log(
+					`${colors.yellow("⚠️")} Forcing exit (${activeOperations.size} operation(s) still active)`
+				);
 			}
 		}
 
@@ -1242,7 +1433,7 @@ function initKeyboardShortcuts () {
 
 		// Close BrowserSync if running
 		if (bs && bs.active) {
-			await new Promise(resolve => {
+			await new Promise((resolve) => {
 				bs.exit();
 				setTimeout(resolve, 100); // Give it time to clean up
 			});
@@ -1253,31 +1444,31 @@ function initKeyboardShortcuts () {
 }
 
 // Function to run a task
-async function runTask (taskName) {
+async function runTask(taskName) {
 	try {
 		let taskPromise;
 
 		switch (taskName) {
-			case 'build':
+			case "build":
 				const buildTime = await build();
 				buildFinish(buildTime);
 				return; // Early return since we handle completion here
-			case 'deployStyles':
+			case "deployStyles":
 				taskPromise = deployStyles();
 				break;
-			case 'deployScripts':
+			case "deployScripts":
 				taskPromise = deployScripts();
 				break;
-			case 'deployImages':
+			case "deployImages":
 				taskPromise = deployImages();
 				break;
-			case 'deployFonts':
+			case "deployFonts":
 				taskPromise = deployFonts();
 				break;
-			case 'deployAll':
+			case "deployAll":
 				taskPromise = deployAll();
 				break;
-			case 'toggleAutoDeploy':
+			case "toggleAutoDeploy":
 				taskPromise = toggleAutoDeploy();
 				return; // Early return for toggle, no additional messages needed
 			default:
@@ -1289,13 +1480,13 @@ async function runTask (taskName) {
 		// Task completion is now handled by deployFiles spinner messages
 	} catch (error) {
 		// Error handling is now done by deployFiles function
-		console.log(`${colors.red('✗')} ${colors.red(taskName + ' failed:')} ${error.message}`);
+		console.log(`${colors.red("✗")} ${colors.red(taskName + " failed:")} ${error.message}`);
 	}
 }
 
 // Helper function to find an available port
-async function findAvailablePort (startPort = 7979) {
-	const net = require('net');
+async function findAvailablePort(startPort = 7979) {
+	const net = require("net");
 
 	return new Promise((resolve) => {
 		const server = net.createServer();
@@ -1305,7 +1496,7 @@ async function findAvailablePort (startPort = 7979) {
 			server.close(() => resolve(port));
 		});
 
-		server.on('error', () => {
+		server.on("error", () => {
 			// Port is in use, try the next one
 			resolve(findAvailablePort(startPort + 1));
 		});
@@ -1313,7 +1504,7 @@ async function findAvailablePort (startPort = 7979) {
 }
 
 // Development server - matches server.js from gulp
-async function startServer () {
+async function startServer() {
 	try {
 		// Find an available port starting from 7979
 		const availablePort = await findAvailablePort(7979);
@@ -1329,64 +1520,70 @@ async function startServer () {
 		const originalInfo = console.info;
 
 		// Temporarily suppress BrowserSync logs
-		console.log = () => { };
-		console.info = () => { };
+		console.log = () => {};
+		console.info = () => {};
 
-		bs.init({
-			notify: false, // Disable browser notifications
-			host: '0.0.0.0', // Allow external access
-			server: {
-				baseDir: "dist",
+		bs.init(
+			{
+				notify: false, // Disable browser notifications
+				host: "0.0.0.0", // Allow external access
+				server: {
+					baseDir: "dist",
+				},
+				port: availablePort,
+				ui: {
+					port: availableUIPort,
+					host: "0.0.0.0", // Allow external access to UI
+				},
+				logLevel: "silent", // Reduce BrowserSync logging
+				open: false, // Don't auto-open browser
 			},
-			port: availablePort,
-			ui: {
-				port: availableUIPort,
-				host: '0.0.0.0' // Allow external access to UI
-			},
-			logLevel: 'silent', // Reduce BrowserSync logging
-			open: false // Don't auto-open browser
-		}, async () => {
-			// Restore console after BrowserSync init
-			console.log = originalLog;
-			console.info = originalInfo;
+			async () => {
+				// Restore console after BrowserSync init
+				console.log = originalLog;
+				console.info = originalInfo;
 
-			// Add small delay to ensure console is fully restored
-			await new Promise(resolve => setTimeout(resolve, 100));
+				// Add small delay to ensure console is fully restored
+				await new Promise((resolve) => setTimeout(resolve, 100));
 
-			const quietMode = process.argv.includes('--quiet');
-			if (!quietMode) {
-				logBeautiful('start', 'Development Server', `Starting at http://localhost:${availablePort}`);
+				const quietMode = process.argv.includes("--quiet");
+				if (!quietMode) {
+					logBeautiful(
+						"start",
+						"Development Server",
+						`Starting at http://localhost:${availablePort}`
+					);
+				}
+
+				// Initial build AFTER console restoration
+				const buildTime = await build();
+
+				// Setup file watchers (matches gulp watch tasks)
+				setupWatchers();
+
+				// Initialize keyboard shortcuts for FTP deployment
+				initKeyboardShortcuts();
+
+				// Show final message with URLs - force display
+				buildFinish(buildTime, true);
 			}
-
-			// Initial build AFTER console restoration
-			const buildTime = await build();
-
-			// Setup file watchers (matches gulp watch tasks)
-			setupWatchers();
-
-			// Initialize keyboard shortcuts for FTP deployment
-			initKeyboardShortcuts();
-
-			// Show final message with URLs - force display
-			buildFinish(buildTime, true);
-		});
-
+		);
 	} catch (error) {
-		console.error('❌ Server start failed:', error);
+		console.error("❌ Server start failed:", error);
 		throw error;
 	}
 }
 
 // Auto-deploy helper function
-async function autoDeployIfEnabled (fileType, changedPath) {
+async function autoDeployIfEnabled(fileType, changedPath) {
 	if (!autoDeployMode || !ftpConfig) return;
 
 	console.log(`🚀 Auto-deploy triggered for ${fileType} file: ${path.basename(changedPath)}`);
 
 	try {
-		if (fileType === 'styles') {
+		if (fileType === "styles") {
 			await deployStyles();
-		} else if (fileType === 'scripts') {
+		} else if (fileType === "scripts") {
 			await deployScripts();
 		}
 	} catch (error) {
@@ -1395,10 +1592,10 @@ async function autoDeployIfEnabled (fileType, changedPath) {
 }
 
 // Enhanced file watchers with beautiful logging
-function setupWatchers () {
+function setupWatchers() {
 	// Watch JS files - optimized with debouncing
 	let jsTimeout = null;
-	chokidar.watch(['src/js/*.js'], { ignoreInitial: true }).on('change', async (changedPath) => {
+	chokidar.watch(["src/js/*.js"], { ignoreInitial: true }).on("change", async (changedPath) => {
 		if (jsTimeout) clearTimeout(jsTimeout);
 		jsTimeout = setTimeout(async () => {
 			const startTime = Date.now();
@@ -1410,20 +1607,30 @@ function setupWatchers () {
 				if (bs && bs.active) bs.reload();
 
 				// Step 3: Deploy only after successful compilation
-				await autoDeployIfEnabled('scripts', changedPath);
+				await autoDeployIfEnabled("scripts", changedPath);
 
 				const compileTime = Date.now() - startTime;
-				console.log(`${colors.cyan('⚙️')} ${colors.cyan('JS changed:')} ${colors.white(path.basename(changedPath))} ${colors.gray('-')} ${colors.cyan('⚙️')} ${colors.yellow(compileTime + 'ms')}`);
+				console.log(
+					`${colors.cyan("⚙️")} ${colors.cyan("JS changed:")} ${colors.white(
+						path.basename(changedPath)
+					)} ${colors.gray("-")} ${colors.cyan("⚙️")} ${colors.yellow(compileTime + "ms")}`
+				);
 			} catch (error) {
 				// Don't deploy if compilation failed
 				const compileTime = Date.now() - startTime;
-				console.log(`${colors.cyan('⚙️')} ${colors.cyan('JS changed:')} ${colors.white(path.basename(changedPath))} ${colors.gray('-')} ${colors.red('✗')} ${colors.yellow(compileTime + 'ms')} ${colors.red('(' + error.message + ')')}`);
+				console.log(
+					`${colors.cyan("⚙️")} ${colors.cyan("JS changed:")} ${colors.white(
+						path.basename(changedPath)
+					)} ${colors.gray("-")} ${colors.red("✗")} ${colors.yellow(
+						compileTime + "ms"
+					)} ${colors.red("(" + error.message + ")")}`
+				);
 			}
 		}, 150);
 	});
 
 	// Watch Pug files (matches: watch(["src/**/**.pug"], series(pugTask, sassTask, previewReload)))
-	chokidar.watch(['src/**/*.pug']).on('change', async (changedPath) => {
+	chokidar.watch(["src/**/*.pug"]).on("change", async (changedPath) => {
 		const startTime = Date.now();
 
 		try {
@@ -1437,60 +1644,92 @@ function setupWatchers () {
 			if (bs && bs.active) bs.reload();
 
 			// Step 4: Deploy only after successful compilation
-			await autoDeployIfEnabled('styles', changedPath);
+			await autoDeployIfEnabled("styles", changedPath);
 
 			const compileTime = Date.now() - startTime;
-			console.log(`${colors.blue('✏️')} ${colors.blue('Pug changed:')} ${colors.white(path.basename(changedPath))} ${colors.gray('-')} ${colors.cyan('⚙️')} ${colors.yellow(compileTime + 'ms')}`);
+			console.log(
+				`${colors.blue("✏️")} ${colors.blue("Pug changed:")} ${colors.white(
+					path.basename(changedPath)
+				)} ${colors.gray("-")} ${colors.cyan("⚙️")} ${colors.yellow(compileTime + "ms")}`
+			);
 		} catch (error) {
 			// Don't deploy if compilation failed
 			const compileTime = Date.now() - startTime;
-			console.log(`${colors.blue('✏️')} ${colors.blue('Pug changed:')} ${colors.white(path.basename(changedPath))} ${colors.gray('-')} ${colors.red('✗')} ${colors.yellow(compileTime + 'ms')} ${colors.red('(' + error.message + ')')}`);
+			console.log(
+				`${colors.blue("✏️")} ${colors.blue("Pug changed:")} ${colors.white(
+					path.basename(changedPath)
+				)} ${colors.gray("-")} ${colors.red("✗")} ${colors.yellow(compileTime + "ms")} ${colors.red(
+					"(" + error.message + ")"
+				)}`
+			);
 		}
 	});
 
 	// Watch SASS files (matches: watch(["src/components/**/*.sass"], series(sassTask)))
-	chokidar.watch(['src/components/**/*.sass']).on('change', async (changedPath) => {
+	chokidar.watch(["src/components/**/*.sass"]).on("change", async (changedPath) => {
 		const startTime = Date.now();
+		const isFontsFile = path.basename(changedPath) === "_fonts.sass";
 
 		try {
-			// Step 1: Compile SASS first
-			await buildSASS();
+			// Fonts CSS riêng; còn lại vào main.min.css
+			if (isFontsFile) {
+				await buildFontsCSS();
+			} else {
+				await buildSASS();
+			}
 
 			// Show compile completion immediately after SASS build
 			const compileTime = Date.now() - startTime;
-			console.log(`${colors.magenta('🎨')} ${colors.magenta('SASS changed:')} ${colors.white(path.basename(changedPath))} ${colors.gray('-')} ${colors.cyan('⚙️')} ${colors.yellow(compileTime + 'ms')}`);
+			console.log(
+				`${colors.magenta("🎨")} ${colors.magenta(
+					isFontsFile ? "Fonts CSS changed:" : "SASS changed:"
+				)} ${colors.white(path.basename(changedPath))} ${colors.gray("-")} ${colors.cyan(
+					"⚙️"
+				)} ${colors.yellow(compileTime + "ms")}`
+			);
 
 			// Step 2: Deploy only after successful compilation and logging
-			await autoDeployIfEnabled('styles', changedPath);
+			await autoDeployIfEnabled("styles", changedPath);
 		} catch (error) {
 			// Don't deploy if compilation failed
 			const compileTime = Date.now() - startTime;
-			console.log(`${colors.magenta('🎨')} ${colors.magenta('SASS changed:')} ${colors.white(path.basename(changedPath))} ${colors.gray('-')} ${colors.red('✗')} ${colors.yellow(compileTime + 'ms')} ${colors.red('(' + error.message + ')')}`);
+			console.log(
+				`${colors.magenta("🎨")} ${colors.magenta(
+					isFontsFile ? "Fonts CSS changed:" : "SASS changed:"
+				)} ${colors.white(path.basename(changedPath))} ${colors.gray("-")} ${colors.red(
+					"✗"
+				)} ${colors.yellow(compileTime + "ms")} ${colors.red("(" + error.message + ")")}`
+			);
 		}
 	});
 
 	// Watch image files (matches: watch image pattern with cleanImage, copyImage)
-	chokidar.watch(['src/assets/img/**/*.{svg,png,jpg,jpeg,gif,webp,mp4}'])
-		.on('change', async (changedPath) => {
+	chokidar
+		.watch(["src/assets/img/**/*.{svg,png,jpg,jpeg,gif,webp,mp4}"])
+		.on("change", async (changedPath) => {
 			const startTime = Date.now();
-			const isVerbose = process.argv.includes('--verbose');
+			const isVerbose = process.argv.includes("--verbose");
 
 			cleanImage();
 			copyImage();
 
 			if (isVerbose) {
 				const copyTime = Date.now() - startTime;
-				console.log(`${colors.green('🖼️')} ${colors.green('Image changed:')} ${colors.white(path.basename(changedPath))} ${colors.gray('-')} ${colors.cyan('⚙️')} ${colors.yellow(copyTime + 'ms')}`);
+				console.log(
+					`${colors.green("🖼️")} ${colors.green("Image changed:")} ${colors.white(
+						path.basename(changedPath)
+					)} ${colors.gray("-")} ${colors.cyan("⚙️")} ${colors.yellow(copyTime + "ms")}`
+				);
 			}
 		})
-		.on('add', async (addedPath) => {
-			const isVerbose = process.argv.includes('--verbose');
+		.on("add", async (addedPath) => {
+			const isVerbose = process.argv.includes("--verbose");
 			if (isVerbose) {
 				console.log(`image added: ${path.basename(addedPath)}`);
 			}
 			// Copy only the new file, not all images
-			const relativePath = path.relative('src/assets/img', addedPath);
-			const destPath = path.join('dist/img', relativePath);
+			const relativePath = path.relative("src/assets/img", addedPath);
+			const destPath = path.join("dist/img", relativePath);
 			const destDir = path.dirname(destPath);
 
 			// Ensure destination directory exists
@@ -1504,14 +1743,14 @@ function setupWatchers () {
 				console.log(`copied: ${relativePath}`);
 			}
 		})
-		.on('unlink', async (removedPath) => {
-			const isVerbose = process.argv.includes('--verbose');
+		.on("unlink", async (removedPath) => {
+			const isVerbose = process.argv.includes("--verbose");
 			if (isVerbose) {
 				console.log(`image removed: ${path.basename(removedPath)}`);
 			}
 			// Remove only the specific file from dist
-			const relativePath = path.relative('src/assets/img', removedPath);
-			const destPath = path.join('dist/img', relativePath);
+			const relativePath = path.relative("src/assets/img", removedPath);
+			const destPath = path.join("dist/img", relativePath);
 
 			if (fs.existsSync(destPath)) {
 				fs.unlinkSync(destPath);
@@ -1522,12 +1761,12 @@ function setupWatchers () {
 		});
 
 	// Watch config files
-	chokidar.watch(['config.json', 'pages.json']).on('change', async (changedPath) => {
+	chokidar.watch(["config.json", "pages.json"]).on("change", async (changedPath) => {
 		const startTime = Date.now();
 
 		// Reload config
-		const newConfig = JSON.parse(fs.readFileSync('config.json', 'utf8'));
-		const newPagesConfig = JSON.parse(fs.readFileSync('pages.json', 'utf8'));
+		const newConfig = JSON.parse(fs.readFileSync("config.json", "utf8"));
+		const newPagesConfig = JSON.parse(fs.readFileSync("pages.json", "utf8"));
 		Object.assign(config, newConfig);
 		Object.assign(pagesConfig, newPagesConfig);
 
@@ -1535,14 +1774,18 @@ function setupWatchers () {
 		buildFinish(buildTime);
 
 		const totalTime = Date.now() - startTime;
-		console.log(`${colors.yellow('⚙️')} ${colors.yellow('Config changed:')} ${colors.white(path.basename(changedPath))} ${colors.gray('-')} ${colors.cyan('⚙️')} ${colors.yellow(totalTime + 'ms')}`);
+		console.log(
+			`${colors.yellow("⚙️")} ${colors.yellow("Config changed:")} ${colors.white(
+				path.basename(changedPath)
+			)} ${colors.gray("-")} ${colors.cyan("⚙️")} ${colors.yellow(totalTime + "ms")}`
+		);
 	});
 
 	// Auto-deploy status is now shown in buildFinish function
 }
 
 // Build pages task - matches build-pages.js from gulp
-function updatePagesTask () {
+function updatePagesTask() {
 	try {
 		const pagesPath = "src/pages";
 		const pagesJsonPath = "pages.json";
@@ -1555,7 +1798,7 @@ function updatePagesTask () {
 
 		for (const file of files) {
 			if (file.endsWith(".pug") && file !== "_layout.pug") {
-				const existingPage = pages.find(page => page.src === file);
+				const existingPage = pages.find((page) => page.src === file);
 				if (!existingPage) {
 					pages.push({ enabled: false, src: file });
 					newPagesCount++;
@@ -1567,51 +1810,50 @@ function updatePagesTask () {
 		fs.writeFileSync(pagesJsonPath, JSON.stringify(currentPagesJson, null, 2));
 
 		if (newPagesCount > 0) {
-			outputText('Add File to Pages.json', `Added ${newPagesCount} new pages to pages.json`);
+			outputText("Add File to Pages.json", `Added ${newPagesCount} new pages to pages.json`);
 		} else {
-			console.log('✅ Pages.json is up to date');
+			console.log("✅ Pages.json is up to date");
 		}
-
 	} catch (error) {
-		console.error('❌ Update pages task failed:', error);
+		console.error("❌ Update pages task failed:", error);
 	}
 }
 
 // Main execution logic - default to watch mode for development
-async function main () {
+async function main() {
 	const command = process.argv[2];
 
 	try {
 		switch (command) {
-			case 'core':
+			case "core":
 				await buildCore();
 				break;
 
-			case 'pages':
+			case "pages":
 				updatePagesTask();
 				break;
 
-			case 'build':
-			case '--build-only':
+			case "build":
+			case "--build-only":
 				const buildTime = await build();
-				logBeautiful('success', 'Build Complete', `Finished in ${buildTime}ms`);
+				logBeautiful("success", "Build Complete", `Finished in ${buildTime}ms`);
 				break;
 
-			case 'serve':
+			case "serve":
 			default:
 				// Default behavior: Start development server with watch mode
 				await startServer();
 				break;
 		}
 	} catch (error) {
-		logBeautiful('error', 'Command Failed', error.message);
+		logBeautiful("error", "Command Failed", error.message);
 		process.exit(1);
 	}
 }
 
 // Handle process termination - SIGTERM only (SIGINT is handled in initKeyboardShortcuts)
-process.on('SIGTERM', () => {
-	console.log('\n🛑 Build process terminated');
+process.on("SIGTERM", () => {
+	console.log("\n🛑 Build process terminated");
 	if (bs && bs.active) {
 		bs.exit();
 	}
