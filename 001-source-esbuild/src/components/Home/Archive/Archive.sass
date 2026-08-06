@@ -1,0 +1,151 @@
+.section-home-archive
+    --archive-active-width: 100%
+    --archive-inactive-width: 100%
+    --archive-controls-width: 100%
+    position: relative
+    overflow: hidden
+
+    .archive-layout
+        align-items: center
+
+    .archive-side
+        flex: 0 0 auto
+
+    .archive
+        @apply w-[33.333333%] relative z-10 flex items-center justify-center body-2 text-Primary/1 py-2 cursor-pointer transition-all duration-300
+        &.active
+            @apply text-Primary/1 font-semibold
+
+    .archive-bg
+        @apply w-[33.333333%] rounded-full bg-linear-2 absolute top-0 bottom-0 left-0 z-0 pointer-events-none h-full
+        transition: transform .3s ease
+
+    .archive-slider-shell
+        min-width: 0
+
+    .archive-slider-viewport
+        overflow: visible
+        clip-path: inset(0 calc(-1920 / 1920 * 100rem) 0 0)
+        touch-action: pan-y
+
+    .archive-slider-track
+        display: flex
+        width: 100%
+        align-items: center
+        gap: calc(16 / 1920 * 100rem)
+        will-change: transform
+
+    .archive-slide
+        flex: 0 0 var(--archive-inactive-width)
+        min-width: 0
+        cursor: pointer
+        will-change: flex-basis
+
+        &.active
+            flex-basis: var(--archive-active-width)
+
+            .archive-slide-media::after
+                opacity: 0
+
+    .archive-slide-media
+        position: relative
+        overflow: hidden
+        border-radius: calc(24 / 1920 * 100rem)
+        background: #dcdcdc
+
+        &::after
+            position: absolute
+            inset: 0
+            background: rgba(11, 17, 15, .48)
+            content: ""
+            opacity: 1
+            pointer-events: none
+            transition: opacity .55s ease
+
+        img
+            display: block
+            width: 100%
+            height: 100%
+            object-fit: cover
+
+    .archive-slider-controls
+        display: flex
+        width: var(--archive-controls-width)
+        align-items: center
+        gap: calc(32 / 1920 * 100rem)
+        margin-top: calc(32 / 1920 * 100rem)
+
+    .archive-navigation
+        display: flex
+        flex: 0 0 auto
+        gap: calc(16 / 1920 * 100rem)
+
+    .archive-prev,
+    .archive-next
+        display: flex
+        width: calc(56 / 1920 * 100rem)
+        height: calc(56 / 1920 * 100rem)
+        align-items: center
+        justify-content: center
+        border: calc(1 / 1920 * 100rem) solid #016c51
+        border-radius: 50%
+        color: #016c51
+        cursor: pointer
+        font-size: calc(22 / 1920 * 100rem)
+        line-height: 1
+        transition: color .3s ease, background-color .3s ease, opacity .3s ease
+
+        &:hover
+            background: #016c51
+            color: #ffffff
+
+        &.disabled
+            opacity: .35
+            pointer-events: none
+
+    .archive-pagination
+        display: flex
+        min-width: 0
+        flex: 1 1 auto
+        align-items: center
+        gap: calc(28 / 1920 * 100rem)
+
+    .archive-pagination-track
+        position: relative
+        height: calc(2 / 1920 * 100rem)
+        flex: 1 1 auto
+        overflow: hidden
+        background: rgba(1, 108, 81, .2)
+
+    .archive-pagination-fill
+        position: absolute
+        inset: 0
+        width: 100%
+        background: #016c51
+        transform: scaleX(calc(1 / 6))
+        transform-origin: left center
+        will-change: transform
+
+    .archive-pagination-current
+        min-width: calc(34 / 1920 * 100rem)
+        color: #016c51
+        font-family: "Minion Pro", sans-serif
+        font-size: calc(28 / 1920 * 100rem)
+        font-weight: 600
+        line-height: 1
+
+    @screen xl
+        --archive-active-width: 64%
+        --archive-inactive-width: 16%
+        --archive-controls-width: 64%
+
+        .archive-slider-track
+            height: calc(486 / 1920 * 100rem)
+
+        .archive-slide-media
+            height: calc(380 / 1920 * 100rem)
+            padding-top: 0
+            transition: height .65s cubic-bezier(.645, .045, .355, 1)
+
+        .archive-slide.active .archive-slide-media
+            height: calc(486 / 1920 * 100rem)

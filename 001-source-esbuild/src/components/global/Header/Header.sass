@@ -1,11 +1,160 @@
 header
-	@apply fixed top-0 left-0 w-screen
-	@apply text-white z-10
+	@apply fixed top-0 left-0 w-full z-100 h-50
+	background: linear-gradient(180deg, rgba(61, 61, 61, 0.50) 0%, rgba(61, 61, 61, 0.00) 100%)
+	transition: height .8s cubic-bezier(.77, 0, .175, 1), background .3s ease
+	overflow: visible
+
+	&::before
+		position: absolute
+		z-index: 0
+		inset: 0
+		content: ''
+		pointer-events: none
+		backdrop-filter: blur(40px)
+		-webkit-backdrop-filter: blur(40px)
+		mask-image: linear-gradient(to bottom, #000 0%, transparent 100%)
+		-webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 100%)
+
+	.header-menu-circle
+		position: fixed
+		z-index: 0
+		top: var(--menu-origin-y, calc(32/1920*100rem))
+		left: var(--menu-origin-x, calc(100% - 52/1920*100rem))
+		width: 300vmax
+		height: 300vmax
+		border-radius: 50%
+		pointer-events: none
+		background-color: #016c51
+		transform: translate(-50%, -50%) scale(0)
+		transform-origin: center
+		transition: transform .9s cubic-bezier(.77, 0, .175, 1)
+		will-change: transform
+
+	.header-logo
+		z-index: 10
+		transition: top .8s cubic-bezier(.77, 0, .175, 1), transform .8s cubic-bezier(.77, 0, .175, 1)
+
+	.container-fluid
+		position: relative
+		z-index: 10
+
+	.hotline
+		@apply inline-flex mt-[calc(62/1920*100rem)] px-6 pt-2 pb-1 text-Utility/white items-center gap-2 rounded-17 border-[#E7D1B2] border h-fit
+		background: linear-gradient(86deg, #016C51 -4.31%, #089874 48.45%, #00543F 101.22%)
+	.search-icon
+		@apply flex items-center justify-center text-2xl cursor-pointer
 	.header-language
-		.header-language-active
-			@apply flex items-center
-			li:not(.wpml-ls-current-language)
-				@apply hidden
-		.header-language-list
-			li.wpml-ls-current-language
-				@apply hidden
+		@apply flex px-5 pt-2 pb-1 justify-center items-center gap-1 rounded-20 border border-Utility/white bg-[#CBCBCB33] body-1
+
+	.header-menu-panel
+		position: fixed
+		z-index: 5
+		top: 0
+		left: 0
+		display: flex
+		width: 100%
+		height: 100vh
+		align-items: center
+		justify-content: center
+		flex-direction: column
+		visibility: hidden
+		pointer-events: none
+		opacity: 0
+		transition: opacity .35s ease, visibility 0s linear .9s
+
+	.header-menu-list
+		width: min(50vw, calc(720/1920*100rem))
+		display: flex
+		flex-direction: column
+		align-items: stretch
+		font-family: 'Minion Pro', serif
+
+	.header-menu-row
+		display: flex
+		align-items: center
+		justify-content: center
+		gap: calc(48/1920*100rem)
+		padding: calc(20/1920*100rem) 0
+		border-top: calc(1/1920*100rem) solid rgba(255, 236, 167, .42)
+
+		&:first-child
+			border-top: 0
+
+		a
+			flex: 1
+			color: #ffffff
+			font-size: clamp(calc(16/1920*100rem), calc(22/1920*100rem), calc(22/1920*100rem))
+			line-height: 1.2
+			text-align: center
+			white-space: nowrap
+			transition: color .2s ease, opacity .2s ease
+
+			&:hover
+				color: #ffeca7
+
+	.header-menu-socials
+		display: flex
+		gap: calc(12/1920*100rem)
+		margin-top: calc(32/1920*100rem)
+
+		a
+			@apply flex items-center justify-center rounded-full
+			width: calc(24/1920*100rem)
+			height: calc(24/1920*100rem)
+			color: #016c51
+			font-size: calc(11/1920*100rem)
+			background: #ffeca7
+			transition: all .2s ease
+
+			&:hover
+				background: #ffffff
+				transform: translateY(calc(-3/1920*100rem))
+
+	&.expanded
+		height: 100vh
+		background: transparent
+
+		.header-menu-circle
+			transform: translate(-50%, -50%) scale(1)
+
+		.header-logo
+			top: 14vh
+			transform: translateX(-50%)
+
+		.header-menu-panel
+			visibility: visible
+			pointer-events: auto
+			opacity: 1
+			transition-delay: .35s, 0s
+
+body.isOpenMenu
+	overflow-y: scroll
+
+@media (max-width: 767.98px)
+	header
+		.header-menu-list
+			width: calc(100% - 48/1920*100rem)
+
+		.header-menu-row
+			gap: calc(16/1920*100rem)
+			padding: calc(16/1920*100rem) 0
+
+			a
+				font-size: clamp(calc(14/1920*100rem), calc(20/1920*100rem), calc(20/1920*100rem))
+
+		.header-logo
+			width: calc(150/1920*100rem)
+
+		&.expanded
+			.header-logo
+				top: 13vh
+
+@media (prefers-reduced-motion: reduce)
+	header
+		transition-duration: .01s
+
+		.header-menu-circle
+			transition-duration: .01s
+
+		.header-logo, .header-menu-panel
+			transition-duration: .01s

@@ -1,0 +1,5 @@
+<svg width="7491" height="4200" viewBox="0 0 7491 4200" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2935.85 -36.766L3144.05 466.347C3156.07 495.389 3157.45 527.747 3147.93 557.701L2838.6 1531.36C2804.75 1637.89 2847.95 1753.77 2943.27 1812.15L3394.04 2088.26C3444.44 2119.13 3472.19 2176.56 3465.05 2235.23L3368.6 3029.8" stroke="white" stroke-width="4" stroke-miterlimit="10" stroke-dasharray="16 16">
+    <animate attributeName="stroke-dashoffset" from="0" to="-32" dur="0.3s" calcMode="linear" repeatCount="indefinite"/>
+</path>
+</svg>

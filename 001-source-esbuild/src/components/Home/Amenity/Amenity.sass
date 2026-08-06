@@ -1,0 +1,9 @@
+.section-home-amenity
+    .floor
+        @apply w-[25%] relative z-10 flex items-center justify-center body-2 text-Utility/white py-2 cursor-pointer transition-all duration-300
+        &.active
+            @apply text-Primary/1 font-semibold
+    
+    .floor-bg
+        @apply w-[25%] rounded-full bg-linear-2 absolute top-0 bottom-0 left-0 z-0 pointer-events-none h-full
+        transition: transform .3s ease

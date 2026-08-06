@@ -1,0 +1,66 @@
+.section-home-overview
+    background: linear-gradient(270deg, rgba(1, 108, 81, 0.15) 0%, rgba(132, 168, 145, 0.15) 27%, rgba(230, 213, 193, 0.23) 100%)
+    .custom-play-btn
+        @apply absolute left-1/2 top-1/2 aspect-square cursor-pointer w-50 lg:w-[calc(256/1920*100rem)]
+        z-index: 11
+        transform: translate(-50%, -50%)
+        transition: transform .75s cubic-bezier(.22, 1, .36, 1), opacity .4s ease, visibility 0s linear 0s
+        &:hover
+            transform: translate(-50%, -50%) scale(1.5)
+            .custom-play-btn__background
+                opacity: 0
+            .custom-play-btn__icon
+                transform: translate(-50%, -50%) scale(calc(1 / 1.5))
+        &.is-hidden
+            opacity: 0
+            visibility: hidden
+            pointer-events: none
+            transition: opacity .4s ease, visibility 0s linear .4s
+
+    .overview-video
+        filter: brightness(.8)
+        transition: filter .4s ease
+        &.is-playing
+            filter: brightness(1)
+
+    .custom-play-btn__background
+        @apply absolute left-1/2 top-1/2 aspect-square w-25 lg:w-40 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none
+        background-color: rgba(255, 186, 99, .65)
+        transition: opacity .45s ease
+
+    .custom-play-btn__icon
+        @apply absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none
+        transform-origin: center
+        transition: transform .75s cubic-bezier(.22, 1, .36, 1)
+
+    .custom-play-btn__ripple
+        @apply absolute left-1/2 top-1/2 aspect-square w-full -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none
+        border: calc(1/1920*100rem) solid rgba(255, 255, 255, .85)
+        animation: overview-ripple 3.6s cubic-bezier(.2, .65, .4, 1) infinite
+
+        &--1
+            animation-delay: -3.15s
+        &--2
+            animation-delay: -2.7s
+        &--3
+            animation-delay: -2.25s
+        &--4
+            animation-delay: -1.8s
+        &--5
+            animation-delay: -1.35s
+        &--6
+            animation-delay: -.9s
+        &--7
+            animation-delay: -.45s
+        &--8
+            animation-delay: 0s
+
+@keyframes overview-ripple
+    0%
+        opacity: .9
+        transform: translate(-50%, -50%) scale(.55)
+    16%
+        opacity: .65
+    100%
+        opacity: 0
+        transform: translate(-50%, -50%) scale(1)

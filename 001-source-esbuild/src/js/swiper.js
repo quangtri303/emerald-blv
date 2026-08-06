@@ -60,27 +60,44 @@ export function swiperInit () {
 		});
 	});
 	new Swiper(".section-home-banner .swiper", {
+		modules: [Navigation, Autoplay, EffectFade],
 		slidesPerView: 1,
 		spaceBetween: 0,
 		speed: 1000,
 		loop: true,
 		effect: "fade",
-		autoplay: {
-			delay: 3500,
+		fadeEffect: {
+			crossFade: true,
 		},
-		modules: [Pagination, Navigation, Autoplay, EffectFade],
-		pagination: {
-			el: ".section-home-banner .swiper-pagination",
-			clickable: true,
-			renderBullet: function (index, className) {
-				const slide = this.slides[index];
-				const title = slide.getAttribute("data-title") || `Slide ${index + 1}`;
-				return `<span class="${className}">${title}</span>`;
-			},
-		},
+		// autoplay: {
+		// 	delay: 5000,
+		// },
 		navigation: {
 			nextEl: ".section-home-banner .btn-next",
 			prevEl: ".section-home-banner .btn-prev",
+		},
+	});
+	new Swiper(".section-news .swiper", {
+		modules: [Navigation, Autoplay],
+		slidesPerView: 1,
+		spaceBetween: 10,
+		speed: 1000,
+		// autoplay: {
+		// 	delay: 5000,
+		// },
+		breakpoints: {
+			1024: {
+				slidesPerView: 2,
+				spaceBetween: 20,
+			},
+			1200: {
+				slidesPerView: 3,
+				spaceBetween: 40,
+			},
+		},
+		navigation: {
+			nextEl: ".section-news .btn-next",
+			prevEl: ".section-news .btn-prev",
 		},
 	});
 }

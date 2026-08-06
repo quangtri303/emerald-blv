@@ -1,0 +1,17 @@
+.section-news
+    background: linear-gradient(270deg, rgba(1, 108, 81, 0.23) 0%, rgba(132, 168, 145, 0.23) 27%, rgba(230, 213, 193, 0.23) 100%)
+    .news-item
+        @apply flex flex-col gap-6 p-6 rounded-6 bg-[#016C512E]
+        .news-img
+            @apply img-ratio ratio:pt-[352_469.33] rounded-4 overflow-hidden
+        .news-info
+            @apply flex flex-col gap-2
+            .news-date
+                @apply body-2 text-Utility/gray-500
+            .news-title
+                @apply heading-5 text-Utility/gray-800
+        
+    .btn-prev, .btn-next
+        @apply w-12 h-12 rounded-full border border-Primary/1 text-Primary/1 transition-colors duration-300
+        &:hover
+            @apply bg-Primary/1 text-Utility/white

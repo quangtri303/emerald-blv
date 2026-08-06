@@ -1,0 +1,48 @@
+-
+    var news = [
+        {
+            img: "./img/banner2.png",
+            date: "17/06/2026",
+            title: "7 giá trị khác biệt tạo nên sức hút của The Emerald Boulevard",
+        },
+        {
+            img: "./img/banner2.png",
+            date: "17/06/2026",
+            title: "7 giá trị khác biệt tạo nên sức hút của The Emerald Boulevard",
+        },
+        {
+            img: "./img/banner2.png",
+            date: "17/06/2026",
+            title: "7 giá trị khác biệt tạo nên sức hút của The Emerald Boulevard",
+        },
+        {
+            img: "./img/banner2.png",
+            date: "17/06/2026",
+            title: "7 giá trị khác biệt tạo nên sức hút của The Emerald Boulevard",
+        },
+        {
+            img: "./img/banner2.png",
+            date: "17/06/2026",
+            title: "7 giá trị khác biệt tạo nên sức hút của The Emerald Boulevard",
+        },
+    ]
+
+section.section-news
+    .section-py
+        div(class="container-fluid flex flex-col gap-4 xl:gap-10")
+            div(class="heading-1 text-Primary/1 uppercase self-stretch text-center") Tin tức
+            .swiper.swiper-news.w-full
+                .swiper-wrapper
+                    each item in news
+                        .swiper-slide
+                            a.news-item(href="#")
+                                .news-img
+                                    +PugImg(item.img)(class="w-full h-full object-cover")
+                                .news-info
+                                    .news-date=item.date
+                                    .news-title=item.title
+            div(class="w-full flex gap-3 justify-center")
+                .btn-prev
+                    i.fa-light.fa-arrow-left-long
+                .btn-next
+                    i.fa-light.fa-arrow-right-long

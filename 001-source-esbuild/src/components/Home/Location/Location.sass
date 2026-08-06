@@ -1,0 +1,16 @@
+.section-home-location
+    background: linear-gradient(270deg, rgba(1, 108, 81, 0.15) 0%, rgba(132, 168, 145, 0.15) 27%, rgba(230, 213, 193, 0.23) 100%)
+    .location-map-asset
+        object-position: 40% center
+        @screen xl
+            object-position: center
+    .location-grid
+        @apply grid grid-cols-2 gap-1.25 body-3 text-Primary/1
+        .location-name
+            @apply flex items-start gap-3
+            &:last-child:nth-child(odd)
+                grid-column: 1 / -1
+                justify-self: center
+            &::before
+                content: ""
+                @apply w-1 h-1 rounded-full bg-Primary/1 mt-2 ml-3

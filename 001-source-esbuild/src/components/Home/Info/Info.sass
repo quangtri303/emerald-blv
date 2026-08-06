@@ -1,0 +1,18 @@
+.section-home-info
+    .info-wrapper
+        @apply border-t border-Utility/white/15 pt-4 pb-3 w-full text-Utility/white
+        .info
+            @apply container flex flex-col lg:flex-row justify-between
+            .info-name
+                @apply flex items-center gap-3
+                .info-num
+                    @apply text-Utility/white/50 body-2
+                .name
+                    @apply heading-4
+            .info-desc
+                @apply body-0 text-left lg:text-right shrink-0
+            .main
+                @apply heading-2 tracking-[calc(-0.72/1920*100rem)] bg-clip-text
+                -webkit-background-clip: text
+                -webkit-text-fill-color: transparent
+                background: linear-gradient(90deg, #EED171 0%, #FFF8E4 32.83%, #B88732 100%)
