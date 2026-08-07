@@ -1,0 +1,18 @@
+-
+    var imgs = ["/img/banner2.png", "/img/banner2.png", "/img/banner2.png", "/img/banner2.png", "/img/banner2.png", "/img/banner2.png", "/img/banner2.png"]
+
+dialog#lv3(open class="h-full w-full p-0 bg-Primary/1")
+    div(class="lv3-dialog w-full h-full flex flex-col items-center justify-center gap-5")
+        div(class="heading-1 text-Utility/white uppercase") CHI TIẾT CĂN HỘ
+        div.lv3-slider
+            div.lv3-slider-viewport
+                div.lv3-slider-track
+                    each img, index in imgs
+                        div.lv3-slide(class=index === 2 ? "active" : "" data-slide-index=index)
+                            div.lv3-slide-media
+                                img(src=img alt="" draggable="false")
+            div.lv3-slider-controls
+                button.lv3-prev(type="button" aria-label="Ảnh trước")
+                    i.fa-light.fa-arrow-left-long
+                button.lv3-next(type="button" aria-label="Ảnh tiếp theo")
+                    i.fa-light.fa-arrow-right-long

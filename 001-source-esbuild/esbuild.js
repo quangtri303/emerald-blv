@@ -1150,6 +1150,7 @@ const buildSASS = trackTask("SASS", async function buildSASS() {
 // Pug task - matches pug.js from gulp
 function buildPugTemplates() {
 	try {
+		const isVerbose = process.argv.includes("--verbose");
 		let filesToProcess = [];
 
 		if (pagesConfig.all || pagesConfig.pages.length === 0) {
@@ -1179,7 +1180,6 @@ function buildPugTemplates() {
 
 				fs.writeFileSync(outputPath, html);
 				// Only show individual file compilation in verbose mode
-				const isVerbose = process.argv.includes("--verbose");
 				if (isVerbose) {
 					console.log(`✅ Compiled: ${fileName} -> ${path.basename(outputPath)}`);
 				}
@@ -1188,7 +1188,39 @@ function buildPugTemplates() {
 			}
 		});
 
-		const isVerbose = process.argv.includes("--verbose");
+		// Build standalone dialog templates so Fancybox can load them through AJAX.
+		const dialogDir = "src/components/global/dialog";
+		if (fs.existsSync(dialogDir)) {
+			const collectDialogFiles = (directory) => fs
+				.readdirSync(directory, { withFileTypes: true })
+				.flatMap((entry) => {
+					const entryPath = path.join(directory, entry.name);
+					if (entry.isDirectory()) return collectDialogFiles(entryPath);
+					return entry.name.endsWith(".pug") ? [entryPath] : [];
+				});
+
+			collectDialogFiles(dialogDir).forEach((inputPath) => {
+				const relativePath = path.relative(dialogDir, inputPath);
+				const outputPath = path.join("dist/dialog", relativePath.replace(".pug", ".html"));
+				fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+
+				try {
+					const html = pug.renderFile(inputPath, {
+						pretty: "\t",
+						compileDebug: isDev,
+						basedir: "src",
+					});
+
+					fs.writeFileSync(outputPath, html);
+					if (isVerbose) {
+						console.log(`✅ Compiled dialog: ${relativePath} -> ${path.relative("dist", outputPath)}`);
+					}
+				} catch (pugError) {
+					console.error(`❌ Dialog compilation failed for ${relativePath}:`, pugError.message);
+				}
+			});
+		}
+
 		if (isVerbose) {
 			console.log("✅ Pug templates built successfully");
 		}

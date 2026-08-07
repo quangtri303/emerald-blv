@@ -9,5 +9,21 @@
 // 				@apply absolute animate-spin left-full ml-3
 
 .btn-prev, .btn-next
-    @apply w-12 h-12 flex items-center justify-center rounded-full border border-Utility/white text-Utility/white cursor-pointer
-    
+    @apply w-12 h-12 flex items-center justify-center rounded-full border border-Utility/white text-Utility/white cursor-pointer transition-colors duration-300
+    &:hover
+        @apply bg-Primary/3
+
+
+.fancybox
+    &__slide
+        @apply p-0
+    &__content
+        @apply w-full h-full relative p-0
+        > .carousel__button.is-close
+            @apply top-[3%] right-[15%] w-16 h-16 p-0 rounded-full bg-Primary/2 text-Primary/1 shadow-none transition-colors duration-300
+            @screen lg
+                @apply top-10 right-10 w-17 h-17
+            &:hover
+                @apply bg-Utility/white
+            svg
+                @apply w-4 h-4

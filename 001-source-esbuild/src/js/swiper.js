@@ -100,4 +100,34 @@ export function swiperInit () {
 			prevEl: ".section-news .btn-prev",
 		},
 	});
+	initAptSwipers(document);
+}
+
+function initAptSwipers (root) {
+	const $root = $(root);
+	const $swipers = $root.is(".swiper-apt")
+		? $root.add($root.find(".swiper-apt"))
+		: $root.find(".swiper-apt");
+
+	$swipers.each(function () {
+		if (this.swiper) return;
+
+		const $controls = $(this).parent();
+		new Swiper(this, {
+			modules: [Navigation],
+			slidesPerView: 1,
+			speed: 1000,
+			spaceBetween: 10,
+			observer: true,
+			observeParents: true,
+			navigation: {
+				nextEl: $controls.find(".btn-next")[0],
+				prevEl: $controls.find(".btn-prev")[0],
+			},
+		});
+	});
+}
+
+export function initDialogSwiper (content) {
+	if (content) initAptSwipers(content);
 }

@@ -1,0 +1,120 @@
+dialog#lv3
+    &::after
+        content: ''
+        @apply absolute top-10 right-10 h-50 w-50 bg-[#29A384] blur-3xl
+    .lv3-dialog
+        position: relative
+        padding: 0 calc(15 / 1920 * 100rem)
+
+    .lv3-slider
+        --lv3-active-width: 100%
+        --lv3-inactive-width: 100%
+        position: relative
+        width: 100%
+        overflow: hidden
+
+    .lv3-slider-viewport
+        width: 100%
+        overflow: hidden
+        touch-action: pan-y
+
+    .lv3-slider-track
+        display: flex
+        width: 100%
+        align-items: center
+        gap: calc(16 / 1920 * 100rem)
+        will-change: transform
+
+    .lv3-slide
+        display: none
+        flex: 0 0 var(--lv3-inactive-width)
+        min-width: 0
+
+        &.active
+            display: block
+            flex-basis: var(--lv3-active-width)
+
+    .lv3-slide-media
+        position: relative
+        overflow: hidden
+        border-radius: calc(16 / 1920 * 100rem)
+        aspect-ratio: 1083 / 680
+        background: #dcdcdc
+        filter: brightness(80%)
+        transition: filter .3s ease
+
+        img
+            display: block
+            width: 100%
+            height: 100%
+            object-fit: cover
+            user-select: none
+
+    .lv3-slide.active .lv3-slide-media
+        filter: brightness(100%)
+
+    .lv3-slider-controls
+        display: flex
+        align-items: center
+        justify-content: center
+        gap: calc(20 / 1920 * 100rem)
+        margin-top: calc(20 / 1920 * 100rem)
+
+        button
+            display: flex
+            width: calc(56 / 1920 * 100rem)
+            height: calc(56 / 1920 * 100rem)
+            align-items: center
+            justify-content: center
+            border: calc(1 / 1920 * 100rem) solid #ffffff
+            border-radius: 50%
+            color: #ffffff
+            cursor: pointer
+            transition: color .3s ease, background-color .3s ease
+
+            &:hover
+                background: #ffeca7
+                color: #016c51
+
+    .lv3-slider-instant
+        .lv3-slider-track,
+        .lv3-slide,
+        .lv3-slide-media
+            transition: none !important
+
+    @screen xl
+        .lv3-dialog
+            padding: 0
+
+        .lv3-slider
+            --lv3-active-width: 56.40625%
+            --lv3-inactive-width: 10%
+            overflow: visible
+
+        .lv3-slider-viewport
+            overflow: hidden
+
+        .lv3-slider-track
+            height: calc(680 / 1920 * 100rem)
+            transition: transform .65s cubic-bezier(.645, .045, .355, 1)
+
+        .lv3-slide
+            display: flex
+            flex-direction: column
+            justify-content: center
+            height: 100%
+            cursor: pointer
+            transition: flex-basis .65s cubic-bezier(.645, .045, .355, 1)
+
+            &.active
+                flex-basis: var(--lv3-active-width)
+
+        .lv3-slide-media
+            height: 100%
+            aspect-ratio: auto
+            transform: scaleY(.78)
+            transform-origin: center
+            transition: transform .65s cubic-bezier(.645, .045, .355, 1), filter .3s ease
+
+        .lv3-slide.active .lv3-slide-media
+            transform: scaleY(1)
