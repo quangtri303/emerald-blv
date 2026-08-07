@@ -1,7 +1,5 @@
-section.section-home-amenity
+section#utilities.section-home-amenity
     div(class="relative bg-Primary/1")
-        div(class="absolute inset-0 z-0")
-            +PugImg("./img/amenity-bg.png")(class="h-full w-full object-cover")
         div(class="section-py xl:pt-[calc(84/1920*100rem)] xl:pb-[calc(103/1920*100rem)] z-10 relative")
             div(class="container-fluid flex flex-col items-end")
                 div(class="flex w-full max-w-[calc(657/1920*100rem)] flex-col gap-4 items-end")
@@ -9,7 +7,7 @@ section.section-home-amenity
                         div
                             div(class="text-Primary/3 text-right text-[calc(58/1920*100rem)] leading-[120%] tracking-[calc(-1.16/1920*100rem)]") 80 tiện ích
                             div(class="text-Utility/white heading-2 tracking-[calc(-0.72/1920*100rem)]") CHO CUỘC SỐNG
-                        div(class="text-Primary/3 font-primary text-[calc(124/1920*100rem)] leading-[120%] uppercase tracking-[calc(-2.48/1920*100rem)]") ĐA
+                        div(class="text-Primary/3 font-primary text-7xl xl:text-[calc(124/1920*100rem)] leading-[120%] uppercase tracking-[calc(-2.48/1920*100rem)]") ĐA
                         div(class="heading-2 tracking-[calc(-0.72/1920*100rem)] text-Utility/white")
                             div TẦNG
                             div DIỆN
@@ -23,9 +21,9 @@ section.section-home-amenity
                         div Tầng 5
                     li(class="floor" data-floor-index="3")
                         div Tầng 20
-                    div(class="absolute inset-0 p-1")
-                        .relative.w-full.h-full
-                            div(class="floor-bg")
+                    +SlidingTabBg("floor-bg")
                 div(class="w-full max-w-[calc(513/1920*100rem)]")
                     div(class="img-ratio ratio:pt-[477_513]")
                         +PugImg("./img/legend.png")
+        div(class="h-[calc(600/1920*100rem)] lg:h-auto lg:absolute inset-0 z-0")
+            +PugImg("./img/amenity-bg.png")(class="h-full w-full object-cover object-[20%_center]")

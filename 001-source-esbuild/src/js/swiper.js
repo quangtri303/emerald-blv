@@ -86,7 +86,7 @@ export function swiperInit () {
 		// 	delay: 5000,
 		// },
 		breakpoints: {
-			1024: {
+			768: {
 				slidesPerView: 2,
 				spaceBetween: 20,
 			},
@@ -99,6 +99,33 @@ export function swiperInit () {
 			nextEl: ".section-news .btn-next",
 			prevEl: ".section-news .btn-prev",
 		},
+	});
+	new Swiper(".section-partners .swiper", {
+		modules: [Pagination, Autoplay],
+		slidesPerView: 2,
+		slidesPerGroup:2,
+		spaceBetween: 10,
+		speed: 1000,
+		autoplay: {
+			delay: 5000,
+		},
+		breakpoints: {
+			1024: {
+				slidesPerView: 4,
+				slidesPerGroup: 4,
+				spaceBetween: 20,
+			},
+			1200: {
+				slidesPerView: 5,
+				slidesPerGroup: 5,
+				spaceBetween: 40,
+			},
+		},
+		pagination: {
+			el: ".section-partners .swiper-pagination",
+			clickable: true,
+		},
+
 	});
 	initAptSwipers(document);
 }

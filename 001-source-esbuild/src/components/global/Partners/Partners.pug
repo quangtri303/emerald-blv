@@ -1,0 +1,14 @@
+-
+    var imgs = ["./img/mb-logo.svg","./img/mb-logo.svg","./img/mb-logo.svg","./img/mb-logo.svg","./img/mb-logo.svg","./img/mb-logo.svg","./img/mb-logo.svg","./img/mb-logo.svg","./img/mb-logo.svg","./img/mb-logo.svg","./img/mb-logo.svg","./img/mb-logo.svg",]
+section#partners.section-partners 
+    div(class="section-py lg:py-15")
+        div(class="container-fluid flex flex-col gap-4 xl:gap-10 ")
+            div(class="heading-3 text-Primary/1 text-center self-stretch ") ĐỐI TÁC PHÁT TRIỂN DỰ ÁN
+            div(class="xl:px-[calc(136/1920*100rem)]")
+                .swiper.swiper-partners.w-full
+                    .swiper-wrapper
+                        each img in imgs
+                            .swiper-slide
+                                .logo-wrapper
+                                    +PugImg(img)(class="w-full h-full object-contain")
+            .swiper-pagination

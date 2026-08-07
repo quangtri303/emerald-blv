@@ -1,11 +1,20 @@
+include ../../mixin.pug
+
 dialog#lv1(open class="h-full w-full p-0")
     div(class="container flex flex-col lg:flex-row h-full justify-center items-center")
-        div(class="w-full lg:w-[76.7%]")
-            div(class="img-ratio ratio:pt-[872_1074]")
-                img(src="./img/lv1-map.svg" alt="" class="w-full h-full object-contain")
+        div(class="w-full lg:w-[60%] xl:w-[76.7%]")
+            img(src="./img/lv1-map.svg" alt="" class="w-full h-full object-contain")
         div(class="w-full lg:flex-[1_0_0] flex flex-col items-end justify-end gap-4 lg:gap-[calc(136/1920*100rem)]")
             div(class="flex flex-col gap-6")
                 div(class="heading-1 text-Primary/1") MẶT BẰNG TẦNG
+                ul.floor-tabs(class="rounded-full border border-Primary/1 p-1 relative flex w-full")
+                    li.floor.active(data-floor-index="0")
+                        div Tầng 6
+                    li.floor(data-floor-index="1")
+                        div Tầng 7 - 19
+                    li.floor(data-floor-index="2")
+                        div Tầng 21 - 39
+                    +SlidingTabBg("floor-bg")
                 a(href="/dialog/lv2.html" data-fancybox data-type="ajax") lv2
             ul.apt-types
                 li

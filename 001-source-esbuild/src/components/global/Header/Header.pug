@@ -3,27 +3,28 @@ header#site-header(class="section-header")
 	div(class="header-logo absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 w-[calc(191/1920*100rem)] z-10")
 		a(href="index.html" class="img-ratio ratio:pt-[130_191] w-full")
 			+PugImg("./img/logo-white.png")(class="w-full h-full object-contain")
-	div(class="container-fluid flex justify-between h-full z-10")
+	div(class="container-fluid flex justify-end lg:justify-between h-full z-10")
 		div(class="hotline")
 			i.fa-jelly.fa-regular.fa-phone
 			div(class="body-1")
 				span HOTLINE:
 				span.font-bold 1900 2555 68
-		div(class="flex items-center gap-4 xl:gap-10 text-Utility/white h-20 mt-11")
-			div(class="search-icon")
-				i.fa-light.fa-magnifying-glass
-			.header-language
-				.lang-text VN
-				div(class="w-5 h-5 flex items-center justify-center p-1")
-					i.fa-solid.fa-caret-down
+		div(class="header-actions flex items-center gap-2 xl:gap-10 text-Utility/white h-20 mt-11")
+			div(class="header-side-controls flex items-center gap-2 xl:gap-10")
+				div(class="search-icon")
+					i.fa-light.fa-magnifying-glass
+				.header-language
+					.lang-text VN
+					div(class="w-5 h-5 flex items-center justify-center p-1")
+						i.fa-solid.fa-caret-down
 			div(class="menu-btn flex items-center gap-3")
-				div(class="body-1 text-center text-Utility/white") MENU
+				div(class="body-1 text-center text-Utility/white hidden lg:block") MENU
 				include ./HeaderHamburger.pug
 	nav#header-menu(class="header-menu-panel")
 		div(class="header-menu-list")
 			div(class="header-menu-row")
-				a(href="index.html") TRANG CHỦ
-				a(href="about.html") TỔNG QUAN
+				a(href="#home") TRANG CHỦ
+				a(href="#overview") TỔNG QUAN
 				a(href="#utilities") TIỆN ÍCH
 			div(class="header-menu-row")
 				a(href="#location") VỊ TRÍ

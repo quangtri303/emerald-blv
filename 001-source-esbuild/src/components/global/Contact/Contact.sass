@@ -1,0 +1,21 @@
+.section-contact
+    background: url("../img/contact-bg.png")
+    background-repeat: no-repeat
+    background-size: cover
+    .contact-form
+        @apply grid grid-cols-1 lg:grid-cols-2 gap-2 w-full
+        .form-col
+            @apply flex flex-col gap-2
+            .form-input-1
+                @apply h-16 px-8 py-2 bg-Utility/white/20 backdrop-blur-[40px] body-2 text-Utility/white flex items-center rounded-8
+                input
+                    @apply bg-transparent w-full focus:outline-none
+                    &::placeholder
+                        @apply text-Utility/white
+        .form-input-2
+            @apply h-full px-8 py-2 bg-Utility/white/20 backdrop-blur-[40px] body-2 text-Utility/white flex items-center rounded-8
+            textarea
+                @apply h-25 lg:h-full w-full bg-transparent focus:outline-none
+                &::placeholder
+                    @apply text-Utility/white
+

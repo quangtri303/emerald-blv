@@ -5,6 +5,12 @@ mixin subscribeForm()
 			button.subscribebutton Gửi
 mixin PugImg(url="./img/1.jpg")
 	img(data-src=url, alt="", class="lozad " + attributes.class)
+
+mixin SlidingTabBg(className)
+	div(class="absolute inset-0 p-1")
+		.relative.w-full.h-full
+			div(class=className)
+
 mixin btnViewAll(text="Xem thêm")
 	a(href="" x-link class='btn-primary-2 btn ' + attributes.class)
 		span=text

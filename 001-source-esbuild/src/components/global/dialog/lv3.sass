@@ -23,15 +23,17 @@ dialog#lv3
         width: 100%
         align-items: center
         gap: calc(16 / 1920 * 100rem)
+        transition: transform .45s cubic-bezier(.645, .045, .355, 1)
         will-change: transform
 
     .lv3-slide
-        display: none
+        display: flex
+        flex-direction: column
+        justify-content: center
         flex: 0 0 var(--lv3-inactive-width)
         min-width: 0
 
         &.active
-            display: block
             flex-basis: var(--lv3-active-width)
 
     .lv3-slide-media
@@ -55,12 +57,16 @@ dialog#lv3
 
     .lv3-slider-controls
         display: flex
+        position: relative
+        z-index: 2
+        flex-shrink: 0
         align-items: center
         justify-content: center
         gap: calc(20 / 1920 * 100rem)
         margin-top: calc(20 / 1920 * 100rem)
+        pointer-events: auto
 
-        button
+        .lv3-prev, .lv3-next
             display: flex
             width: calc(56 / 1920 * 100rem)
             height: calc(56 / 1920 * 100rem)
@@ -70,11 +76,38 @@ dialog#lv3
             border-radius: 50%
             color: #ffffff
             cursor: pointer
+            touch-action: manipulation
             transition: color .3s ease, background-color .3s ease
 
             &:hover
                 background: #ffeca7
                 color: #016c51
+
+            &:active
+                transform: scale(.94)
+
+    .lv3-slider-counter
+        display: flex
+        min-width: calc(64 / 1920 * 100rem)
+        align-items: center
+        justify-content: center
+        gap: calc(6 / 1920 * 100rem)
+        color: #ffffff
+        font-variant-numeric: tabular-nums
+
+    .lv3-slider-divider,
+    .lv3-slider-total
+        opacity: .65
+
+    @media (max-width: 1199.98px)
+        .lv3-slide-media
+            width: 100%
+            max-width: calc(159.2647vh - 270.75px)
+            margin-right: auto
+            margin-left: auto
+
+            @supports (height: 100dvh)
+                max-width: calc(159.2647dvh - 270.75px)
 
     .lv3-slider-instant
         .lv3-slider-track,

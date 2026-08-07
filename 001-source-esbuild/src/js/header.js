@@ -31,6 +31,12 @@ export const header = {
 			setMenuOrigin(this);
 		});
 
+		$("#header-menu .header-menu-list a[href^='#']").on("click", function () {
+			menuButton.removeClass("active");
+			headerElement.removeClass("expanded");
+			$("body").removeClass("isOpenMenu");
+		});
+
 		$(window).on("resize", function () {
 			if (headerElement.hasClass("expanded")) {
 				setMenuOrigin(menuButton[0]);

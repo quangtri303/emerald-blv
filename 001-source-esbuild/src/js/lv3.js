@@ -13,6 +13,8 @@ export function lv3Init (root = document) {
 		const originalSlides = Array.from(slider.querySelectorAll(".lv3-slide"));
 		const prev = slider.querySelector(".lv3-prev");
 		const next = slider.querySelector(".lv3-next");
+		const current = slider.querySelector(".lv3-slider-current");
+		const total = slider.querySelector(".lv3-slider-total");
 
 		if (!viewport || !track || !originalSlides.length) return;
 
@@ -38,8 +40,10 @@ export function lv3Init (root = document) {
 		let isAnimating = false;
 		let transitionTimer = null;
 
-		const isDesktop = () => window.matchMedia("(min-width: 1200px)").matches;
+		const formatSlideNumber = (number) => String(number).padStart(2, "0");
 		const readWidth = (name, fallback) => parseFloat(getComputedStyle(slider).getPropertyValue(name)) || fallback;
+
+		if (total) total.textContent = formatSlideNumber(originalSlides.length);
 
 		const getTrackOffset = (position) => {
 			const activeWidth = viewport.clientWidth * readWidth("--lv3-active-width", 100) / 100;
@@ -53,6 +57,7 @@ export function lv3Init (root = document) {
 		const render = (position, animate = true) => {
 			activePosition = position;
 			activeIndex = Number(slides[position].dataset.slideIndex);
+			if (current) current.textContent = formatSlideNumber(activeIndex + 1);
 
 			if (!animate) slider.classList.add("lv3-slider-instant");
 
@@ -62,11 +67,7 @@ export function lv3Init (root = document) {
 				slide.setAttribute("aria-hidden", String(!isActive));
 			});
 
-			if (!isDesktop()) {
-				track.style.transform = "";
-			} else {
-				track.style.transform = `translate3d(${getTrackOffset(activePosition)}px, 0, 0)`;
-			}
+			track.style.transform = `translate3d(${getTrackOffset(activePosition)}px, 0, 0)`;
 
 			if (!animate) {
 				void track.offsetWidth;
@@ -89,19 +90,24 @@ export function lv3Init (root = document) {
 		const moveTo = (position) => {
 			if (isAnimating || position === activePosition || !slides[position]) return;
 
-			if (!isDesktop()) {
-				const slideIndex = Number(slides[position].dataset.slideIndex);
-				render(slideIndex + cloneCount, false);
-				return;
-			}
-
 			isAnimating = true;
 			render(position);
 			transitionTimer = setTimeout(normalizePosition, 750);
 		};
 
-		prev?.addEventListener("click", () => moveTo(activePosition - 1));
-		next?.addEventListener("click", () => moveTo(activePosition + 1));
+		const moveBy = (direction) => {
+			if (isAnimating) return;
+			moveTo(activePosition + direction);
+		};
+
+		const handleControlClick = (event, direction) => {
+			event.preventDefault();
+			event.stopPropagation();
+			moveBy(direction);
+		};
+
+		prev?.addEventListener("click", (event) => handleControlClick(event, -1));
+		next?.addEventListener("click", (event) => handleControlClick(event, 1));
 
 		slides.forEach((slide, position) => {
 			slide.addEventListener("click", () => moveTo(position));
@@ -117,7 +123,7 @@ export function lv3Init (root = document) {
 		viewport.addEventListener("pointerup", (event) => {
 			if (pointerStart === null) return;
 			const distance = event.clientX - pointerStart;
-			if (Math.abs(distance) > 40) moveTo(activePosition + (distance < 0 ? 1 : -1));
+			if (Math.abs(distance) > 40) moveBy(distance < 0 ? 1 : -1);
 			pointerStart = null;
 		});
 		viewport.addEventListener("pointercancel", () => { pointerStart = null; });

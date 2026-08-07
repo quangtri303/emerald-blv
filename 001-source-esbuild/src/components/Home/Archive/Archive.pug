@@ -1,24 +1,22 @@
 -
     var imgs = ["./img/area-bg.png", "./img/area-bg.png", "./img/area-bg.png", "./img/area-bg.png", "./img/area-bg.png", "./img/area-bg.png"]
 
-section.section-home-archive
+section#gallery.section-home-archive
     div(class="relative w-full h-full overflow-hidden")
         div(class="absolute inset-0 pointer-events-none")
             +PugImg("./img/overview-bg.svg")(class="h-full w-full object-cover opacity-50")
         div(class="section-py xl:py-32")
-            div(class="archive-layout container-fluid relative flex flex-col xl:flex-row gap-10 xl:gap-30")
-                div(class="archive-side flex w-full flex-col gap-6 xl:w-[25%]")
-                    div(class="heading-1 text-Primary/1 uppercase") Thư viện
-                    ul(class="rounded-full border border-Utility/gray-200 p-1 relative flex max-w-[calc(286/1920*100rem)]")
+            div(class="archive-layout container-fluid relative flex flex-col  xl:flex-row gap-10 xl:gap-30")
+                div(class="archive-side items-center xl:items-start flex w-full flex-col gap-6 xl:w-[25%]")
+                    div(class="heading-1 text-Primary/1 uppercase text-center xl:text-left") Thư viện
+                    ul(class="rounded-full border border-Utility/gray-200 p-1 relative flex w-[calc(286/1920*100rem)]")
                         li(class="archive active" data-archive-index="0")
                             div Hình ảnh
                         li(class="archive" data-archive-index="1")
                             div Video
                         li(class="archive" data-archive-index="2")
                             div Tài liệu
-                        div(class="absolute inset-0 p-1")
-                            .relative.w-full.h-full
-                                div(class="archive-bg")
+                        +SlidingTabBg("archive-bg")
                 div(class="archive-slider-shell w-full xl:flex-[1_0_0]")
                     .archive-slider
                         .archive-slider-viewport

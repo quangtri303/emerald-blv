@@ -591,8 +591,10 @@ module.exports = {
             fontSize: "calc(24/1920*100rem)", // 6xl
           },
           [`@media (min-width: ${theme("screens.xl")})`]: {
-            fontSize: "calc(24/1920*100rem)", // 72
+            fontSize: "calc(30/1920*100rem)", // 72
           },
+          lineHeight: "130%",
+          fontWeight: "600",
         },
         ".heading-4": {
           fontFamily: "Minion Pro",

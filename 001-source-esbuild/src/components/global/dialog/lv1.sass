@@ -1,4 +1,17 @@
 dialog#lv1
+    .floor-tabs
+        @apply w-full
+
+    .floor
+        @apply w-[33.333333%] relative z-10 flex items-center justify-center body-2 text-Primary/1 py-2 cursor-pointer transition-all duration-300
+
+        &.active
+            @apply font-semibold
+
+    .floor-bg
+        @apply w-[33.333333%] rounded-full bg-linear-2 absolute top-0 bottom-0 left-0 z-0 pointer-events-none h-full
+        transition: transform .3s ease
+
     .apt-types
         @apply bg-Utility/gray-50 p-5 flex flex-col gap-2 w-full
         li

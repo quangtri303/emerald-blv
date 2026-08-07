@@ -1,0 +1,26 @@
+-
+    var sidebarItems = [
+        { id: "home", label: "Trang chủ" },
+        { id: "project-info", label: "Tổng quan" },
+        { id: "utilities", label: "Tiện ích" },
+        { id: "overview", label: "Mặt bằng" },
+        { id: "location", label: "Vị trí" },
+        { id: "floor-plan", label: "Mặt bằng" },
+        { id: "gallery", label: "Thư viện" },
+        { id: "news", label: "Tin tức" },
+        { id: "investor", label: "Chủ đầu tư" },
+        { id: "partners", label: "Đối tác" },
+        { id: "contact", label: "Liên hệ" },
+    ]
+
+aside.section-home-sidebar
+    div(class="top-line")
+    nav
+        ul.sidebar-list
+            each item in sidebarItems
+                li.relative
+                    a.sidebar-link(href="#" + item.id)
+                        span.sidebar-dot(class="h-4 w-4 bg-Primary/3 hover:scale-110")
+                        span.sidebar-label= item.label
+    div(class="bot-line")
+    
