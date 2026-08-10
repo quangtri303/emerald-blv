@@ -2,11 +2,11 @@ export function headerSearch () {
 	function closeSearch () {
 		$(".header-search-form").removeClass("active");
 		$(".header-search").removeClass("active");
-		$("body").removeClass("disable");
+		$("body").removeClass("disable-scroll");
 	}
 	$(".header-search").on("click", function () {
 		$(".header-search-form").addClass("active");
-		$("body").addClass("disable");
+		$("body").addClass("disable-scroll");
 		setTimeout(() => {
 			$(".header-search-form .searchinput").focus();
 		}, 400);

@@ -1,24 +1,24 @@
 header#site-header(class="section-header")
 	div(class="header-menu-circle")
-	div(class="header-logo absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 w-[calc(191/1920*100rem)] z-10")
+	div(class="header-logo absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 w-[calc(191/1920*100rem)] z-30")
 		a(href="index.html" class="img-ratio ratio:pt-[130_191] w-full")
 			+PugImg("./img/logo-white.png")(class="w-full h-full object-contain")
-	div(class="container-fluid flex justify-end lg:justify-between h-full z-10")
-		div(class="hotline")
+	div(class="container-fluid flex justify-end md:justify-between h-full z-10")
+		div(class="hotline hidden md:inline-flex")
 			i.fa-jelly.fa-regular.fa-phone
 			div(class="body-1")
 				span HOTLINE:
 				span.font-bold 1900 2555 68
 		div(class="header-actions flex items-center gap-2 xl:gap-10 text-Utility/white h-20 mt-11")
 			div(class="header-side-controls flex items-center gap-2 xl:gap-10")
-				div(class="search-icon")
+				div(class="search-icon header-search")
 					i.fa-light.fa-magnifying-glass
 				.header-language
 					.lang-text VN
 					div(class="w-5 h-5 flex items-center justify-center p-1")
 						i.fa-solid.fa-caret-down
 			div(class="menu-btn flex items-center gap-3")
-				div(class="body-1 text-center text-Utility/white hidden lg:block") MENU
+				div(class="body-1 text-center text-Utility/white hidden md:block") MENU
 				include ./HeaderHamburger.pug
 	nav#header-menu(class="header-menu-panel")
 		div(class="header-menu-list")
@@ -39,3 +39,9 @@ header#site-header(class="section-header")
 				i.fa-brands.fa-facebook-f
 			a(href="#youtube")
 				i.fa-brands.fa-youtube
+		div(class="hotline inline-flex md:hidden")
+			i.fa-jelly.fa-regular.fa-phone
+			div(class="body-1")
+				span HOTLINE:
+				span.font-bold 1900 2555 68
+	include ../SearchPopup/SearchPopup.pug

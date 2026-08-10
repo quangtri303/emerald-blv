@@ -31,7 +31,7 @@ header
 		will-change: transform
 
 	.header-logo
-		z-index: 10
+		z-index: 30
 		transition: top .8s cubic-bezier(.77, 0, .175, 1), transform .8s cubic-bezier(.77, 0, .175, 1)
 
 	.container-fluid
@@ -39,10 +39,14 @@ header
 		z-index: 10
 
 	.hotline
-		@apply lg:inline-flex mt-[calc(62/1920*100rem)] px-6 pt-2 pb-1 text-Utility/white items-center gap-2 rounded-17 border-[#E7D1B2] border h-fit hidden
+		@apply mt-[calc(62/1920*100rem)] px-6 pt-2 pb-1 text-Utility/white items-center gap-2 rounded-17 border-[#E7D1B2] border h-fit 
 		background: linear-gradient(86deg, #016C51 -4.31%, #089874 48.45%, #00543F 101.22%)
 	.search-icon
 		@apply flex items-center justify-center text-2xl cursor-pointer
+		padding: 0
+		border: 0
+		color: inherit
+		background: transparent
 	.header-language
 		@apply flex px-5 pt-2 pb-1 justify-center items-center gap-1 rounded-20 border border-Utility/white bg-[#CBCBCB33] body-1
 

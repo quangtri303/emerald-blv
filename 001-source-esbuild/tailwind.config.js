@@ -575,9 +575,9 @@ module.exports = {
         },
         ".heading-2": {
           fontFamily: "Minion Pro",
-          fontSize: "28px", // 4xl
+          fontSize: "24px", // 4xl
           [`@media (min-width: ${theme("screens.lg")})`]: {
-            fontSize: "calc(32/1920*100rem)", // 6xl
+            fontSize: "calc(28/1920*100rem)", // 6xl
           },
           [`@media (min-width: ${theme("screens.xl")})`]: {
             fontSize: "calc(36/1920*100rem)", // 72

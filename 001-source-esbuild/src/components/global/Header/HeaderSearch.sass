@@ -1,17 +1,99 @@
 .header-search-form
 	visibility: hidden
-	@apply fixed rem:top-[81px] left-0 w-full h-full bg-black bg-opacity-70 backdrop-blur-md z-[1000] flex justify-center items-center transition-all duration-300 opacity-0  pointer-events-none
+	position: fixed
+	inset: 0
+	z-index: 1000
+	display: flex
+	align-items: center
+	justify-content: center
+	padding: calc(30/1920*100rem)
+	background: linear-gradient(135deg, rgba(0, 54, 41, .96), rgba(1, 108, 81, .92))
+	backdrop-filter: blur(18px)
+	-webkit-backdrop-filter: blur(18px)
+	opacity: 0
+	pointer-events: none
+	transition: opacity .3s ease, visibility 0s linear .3s
+
 	&.active
-		@apply opacity-100 visible pointer-events-auto
+		visibility: visible
+		opacity: 1
+		pointer-events: auto
+		transition-delay: 0s
+
+	.close
+		position: absolute
+		top: calc(30/1920*100rem)
+		right: calc(30/1920*100rem)
+		display: flex
+		width: calc(48/1920*100rem)
+		height: calc(48/1920*100rem)
+		align-items: center
+		justify-content: center
+		border: 1px solid rgba(255, 255, 255, .7)
+		border-radius: 50%
+		color: #ffffff
+		font-size: calc(24/1920*100rem)
+		background: transparent
+		cursor: pointer
+		transition: color .2s ease, background .2s ease, border-color .2s ease
+
+		&:hover
+			border-color: #ffeca7
+			color: #016c51
+			background: #ffeca7
+
+	.search-popup-content
+		width: min(calc(800/1920*100rem), 100%)
+
+	.search-popup-title
+		@apply heading-2 text-Utility/white text-center uppercase
+		margin: 0 0 calc(34/1920*100rem)
+
 	.wrap-form-search-product
-		max-width: r(800px)
-		margin: 0 auto
-		@apply w-full
-		.productsearchbox
-			@apply w-full flex relative flex-wrap
-			[class*="Module"]
-				width: 100% !important
-			input
-				@apply flex-1 h-12.5 bg-white text-base px-7.5 outline-0 border-0 #{!important}
-			button
-				@apply w-12.5 flex items-center justify-center  outline-0 border-0 border-l border-[#E0E0E0] bg-black
+		width: 100%
+
+	.productsearchbox
+		display: flex
+		align-items: center
+		border-bottom: calc(1/1920*100rem) solid rgba(255, 236, 167, .65)
+
+	.searchinput
+		flex: 1
+		min-width: 0
+		padding: calc(15/1920*100rem) 0
+		border: 0
+		outline: 0
+		color: #ffffff
+		font-family: inherit
+		font-size: clamp(calc(18/1920*100rem), 2vw, calc(28/1920*100rem))
+		background: transparent
+		cursor: text
+
+		&::placeholder
+			color: rgba(255, 255, 255, .72)
+
+	.search-submit
+		display: flex
+		width: calc(48/1920*100rem)
+		height: calc(48/1920*100rem)
+		align-items: center
+		justify-content: center
+		color: #ffeca7
+		font-size: calc(24/1920*100rem)
+		cursor: pointer
+		transition: color .2s ease, transform .2s ease
+
+		&:hover
+			color: #ffffff
+			transform: translateX(4px)
+
+@media (max-width: 767.98px)
+	.header-search-form
+		padding: calc(20/1920*100rem) calc(15/1920*100rem)
+
+		.close
+			top: calc(20/1920*100rem)
+			right: calc(15/1920*100rem)
+
+		.search-popup-title
+			margin-bottom: calc(24/1920*100rem)

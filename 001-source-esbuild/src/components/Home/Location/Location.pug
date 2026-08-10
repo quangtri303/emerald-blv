@@ -10,44 +10,45 @@ section#location.section-home-location
                     div(class="body-2 text-Utility/gray-800 text-center") Sở hữu vị trí đắt giá trên “cung đường vàng” Quốc lộ 13, The Emerald Boulevard trở thành tâm điểm kết nối của toàn khu vực. Chỉ trong vài phút di chuyển, cư dân dễ dàng tiếp cận trường học, bệnh viện, trung tâm thương mại và các dịch vụ thiết yếu, đồng thời kết nối nhanh đến TP.HCM và các trung tâm kinh tế trọng điểm, đưa mọi tiện ích đến gần hơn với cuộc sống thường ngày. 
                 div(class="w-full flex items-center justify-center flex-col md:w-1/2 xl:w-auto")
                     div(class="w-full flex items-center justify-center p-6.5 relative")
-                        div(class="absolute top-0 -bottom-0.5 left-0 w-1/2")
+                        div(class="absolute top-0 -bottom-0.5 left-0 w-1/2 select-none")
                             +PugImg("./img/border-1.svg")(class="h-full w-full")
                         div(class="flex flex-col gap-2.5 justify-center items-center")
-                            div(class="text-Primary/1 body-1 font-bold") 1 – 5 phút
+                            div(class="text-Primary/1 body-1 font-bold") 1 - 5 phút
                             div(class="location-grid")
                                 .location-name Bệnh viện Quốc tế Hạnh Phúc
                                 .location-name Ngã tư Bình Phước
                                 .location-name Lottle Mart
                                 .location-name Chợ đầu mối Thủ Đức
                     div(class="w-full flex items-center justify-center py-6.5 relative")
-                        div(class="absolute top-0 -bottom-0.5 right-0 w-1/2")
+                        div(class="absolute top-0 -bottom-0.5 right-0 w-1/2 select-none")
                             +PugImg("./img/border-2.svg")(class="h-full w-full")
                         div(class="flex flex-col gap-2.5 justify-center items-center")
-                            div(class="text-Primary/1 body-1 font-bold") 10 – 15 phút
+                            div(class="text-Primary/1 body-1 font-bold") 10 - 15 phút
                             div(class="location-grid")
                                 .location-name Ga Sóng Thần
                                 .location-name Ga Bình Triệu
                                 .location-name Trung tâm Hành chính Thuận An
                                 .location-name Ngã tư Hàng Xanh, Gigamall
                     div(class="w-full flex items-center justify-center py-6.5 relative")
-                        div(class="absolute top-0 -bottom-0.5 left-0 w-1/2")
+                        div(class="absolute top-0 -bottom-0.5 left-0 w-1/2 select-none")
                             +PugImg("./img/border-3.svg")(class="h-full w-full")
                         div(class="flex flex-col gap-2.5 justify-center items-center")
                             div(class="text-Primary/1 body-1 font-bold") 20 phút
                             div(class="location-grid")
                                 .location-name Phường Sài Gòn
                     div(class="w-full flex items-center justify-center py-6.5 relative")
-                        div(class="absolute top-0 bottom-0 right-0 w-[52%]")
+                        div(class="absolute top-0 bottom-0 right-0 w-[52%] select-none")
                             +PugImg("./img/border-4.svg")(class="h-full w-full")
                         div(class="flex flex-col gap-2.5 justify-center items-center")
                             div(class="text-Primary/1 body-1 font-bold") 25 phút
                             div(class="location-grid")
                                 .location-name Sân bay Tân Sơn Nhất
-        div(class="relative mt-4 w-full xl:absolute xl:bottom-0 xl:left-0 xl:w-[74%]")
-            div(class="relative w-full h-[calc(400/1920*100rem)] lg:h-[calc(822/1920*100rem)]")
+        div(class="relative mt-4 w-full xl:absolute xl:bottom-0 xl:left-0 xl:w-[74%] -z-10")
+            div(class="relative w-full h-[calc(400/1920*100rem)] md:h-[calc(822/1920*100rem)]")
                 +PugImg("./img/map.svg")(class="location-map-asset w-full h-full object-cover")
                 div(class="absolute inset-0")
                     +PugImg("./img/mainroute.svg")(class="location-map-asset w-full h-full object-cover")
                 div(class="absolute inset-0")
                     +PugImg("./img/map-dots.svg")(class="location-map-asset w-full h-full object-cover")
-                div(class="absolute top-0 w-full h-[calc(195/1920*100rem)] bg-gradient-to-b from-[#F7F6F2] to-[#EFF2EF00]")
+                div(class="absolute top-0 w-full  h-[calc(195/1920*100rem)] bg-gradient-to-b from-[#fff] to-[#ffffff00]")
+                div(class="location-map-mask absolute top-0 right-0 bottom-0 w-[25%] pointer-events-none")

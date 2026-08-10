@@ -1,9 +1,11 @@
 .section-home-location
-    background: linear-gradient(270deg, rgba(1, 108, 81, 0.15) 0%, rgba(132, 168, 145, 0.15) 27%, rgba(230, 213, 193, 0.23) 100%)
+    background: linear-gradient(270deg, rgba(1, 108, 81, 0.15) 0%, rgba(132, 168, 145, 0.23) 27%, rgba(230, 213, 193, 0.23) 100%)
     .location-map-asset
         object-position: 40% center
         @screen xl
             object-position: center
+    .location-map-mask
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%)
     .location-grid
         @apply grid grid-cols-2 gap-1.25 body-3 text-Primary/1
         .location-name
