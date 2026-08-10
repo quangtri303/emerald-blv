@@ -1,9 +1,28 @@
+-
+    var tabs = [
+        {
+            name: "Tầng 1",
+            img: "./img/legend.png"
+        },
+        {
+            name: "Tầng 4",
+            img: "./img/legend.png"
+        },
+        {
+            name: "Tầng 5",
+            img: "./img/legend.png"
+        },
+        {
+            name: "Tầng 20",
+            img: "./img/legend.png"
+        },
+    ]
 section#utilities.section-home-amenity
     div(class="relative bg-Primary/1")
         div(class="section-py xl:pt-[calc(84/1920*100rem)] xl:pb-[calc(103/1920*100rem)] z-10 relative")
             div(class="container-fluid flex flex-col items-end")
                 div(class="flex w-full max-w-[calc(657/1920*100rem)] flex-col gap-4 items-end")
-                    div(class="flex justify-center gap-2.5")
+                    div(class="flex justify-center gap-2.5 text-typing")
                         div
                             div(class="text-Primary/3 text-right text-6xl md:text-[calc(58/1920*100rem)] leading-[120%] tracking-[calc(-1.16/1920*100rem)]") 80 tiện ích
                             div(class="text-Utility/white heading-2 tracking-[calc(-0.72/1920*100rem)]") CHO CUỘC SỐNG
@@ -11,19 +30,15 @@ section#utilities.section-home-amenity
                         div(class="heading-2 tracking-[calc(-0.72/1920*100rem)] text-Utility/white flex flex-col justify-center")
                             div TẦNG
                             div DIỆN
-                    div(class="w-full max-w-[calc(497/1920*100rem)] body-2 text-right text-Utility/white") The Emerald Boulevard phát triển hệ tiện ích đa tầng, nơi mỗi không gian được kiến tạo để đồng hành cùng từng khía cạnh của cuộc sống - từ vận động, thư giãn, chăm sóc sức khỏe đến kết nối gia đình và cộng đồng, mang đến trải nghiệm sống trọn vẹn trong từng khoảnh khắc.
-                ul(class="w-[calc(374/1920*100rem)] rounded-full border border-Utility/white p-1 relative mt-[calc(66/1920*100rem)] mb-[calc(24/1920*100rem)] flex")
-                    li(class="floor active" data-floor-index="0")
-                        div Tầng 1
-                    li(class="floor" data-floor-index="1")
-                        div Tầng 4
-                    li(class="floor" data-floor-index="2")
-                        div Tầng 5
-                    li(class="floor" data-floor-index="3")
-                        div Tầng 20
-                    +SlidingTabBg("floor-bg")
-                div(class="w-full max-w-[calc(513/1920*100rem)]")
+                    div(class="w-full max-w-[calc(497/1920*100rem)] body-2 text-right text-Utility/white text-typing-word") The Emerald Boulevard phát triển hệ tiện ích đa tầng, nơi mỗi không gian được kiến tạo để đồng hành cùng từng khía cạnh của cuộc sống - từ vận động, thư giãn, chăm sóc sức khỏe đến kết nối gia đình và cộng đồng, mang đến trải nghiệm sống trọn vẹn trong từng khoảnh khắc.
+                    ul(class="w-[calc(374/1920*100rem)] rounded-full border border-Utility/white p-1 relative mt-[calc(66/1920*100rem)] mb-[calc(24/1920*100rem)] flex fade-left")
+                        each tab, index in tabs
+                            li(class=index === 0 ? "floor active" : "floor" data-floor-index=index)
+                                div=tab.name
+                        +SlidingTabBg("floor-bg")
+                div(class="w-full max-w-[calc(513/1920*100rem)] fade-left")
                     div(class="img-ratio ratio:pt-[477_513]")
-                        +PugImg("./img/legend.png")
+                        each tab, index in tabs
+                            +PugImg(tab.img)(class=(index === 0 ? "legend-img w-full h-full object-contain" : "legend-img hidden w-full h-full object-contain"))
         div(class="h-[calc(600/1920*100rem)] lg:h-auto lg:absolute inset-0 z-0")
             +PugImg("./img/amenity-bg.png")(class="h-full w-full object-cover object-[20%_center]")

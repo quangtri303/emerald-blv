@@ -16,6 +16,7 @@
 	"license": "ISC",
 	"dependencies": {
 		"@fancyapps/ui": "^4.0.31",
+		"animejs": "^4.5.0",
 		"aos": "^2.3.4",
 		"chart.js": "^4.5.0",
 		"cheerio": "^1.0.0-rc.12",

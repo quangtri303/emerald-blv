@@ -41,12 +41,12 @@ section#project-info.section-home-info
         div(class="absolute inset-0 -z-10")
             +PugImg("./img/project-bg.png")(class="h-full w-full object-cover")
         div(class="flex flex-col w-full pb-15 items-start gap-3")
-            div(class="container heading-1 text-Utility/white uppercase") Thông tin dự án
+            div(class="container heading-1 text-Utility/white uppercase text-typing") Thông tin dự án
             ul(class="flex flex-col items-start w-full")
                 each item, index in info
                     li.info-wrapper
                         .info
-                            .info-name
+                            .info-name.fade-right
                                 .info-num 0#{index+1}
                                 .name=item.name
-                            .info-desc(class=index===0 ? "main" : "")=item.desc
+                            .info-desc.fade-left(class=index===0 ? "main" : "")=item.desc

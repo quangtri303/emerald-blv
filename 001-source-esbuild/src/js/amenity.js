@@ -8,5 +8,6 @@ export function amenityInit() {
 
 		$floor.addClass("active").siblings(".floor").removeClass("active");
 		$section.find(".floor-bg").css("transform", `translateX(${floorIndex * 100}%)`);
+		$section.find(".legend-img").addClass("hidden").eq(floorIndex).removeClass("hidden");
 	});
 }
