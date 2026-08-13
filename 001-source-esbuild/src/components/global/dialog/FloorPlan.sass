@@ -1,0 +1,46 @@
+dialog.floorplan
+    .floor-tabs
+        @apply w-full
+
+    .floor
+        width: calc(100% / var(--floor-count, 3))
+        @apply relative z-10 flex items-center justify-center body-2 text-Primary/1 py-2 cursor-pointer transition-all duration-300
+
+        &.active
+            @apply font-semibold
+
+    .floor-bg
+        width: calc(100% / var(--floor-count, 3))
+        @apply rounded-full bg-linear-2 absolute top-0 bottom-0 left-0 z-0 pointer-events-none h-full
+        transition: transform .3s ease
+
+    .floorplan-map-stage
+        position: relative
+        width: 100%
+
+    .floorplan-map-panel
+        position: absolute
+        inset: 0
+        width: 100%
+        opacity: 0
+        visibility: hidden
+        pointer-events: none
+        transition: opacity .3s ease
+
+        &.active
+            position: relative
+            opacity: 1
+            visibility: visible
+            pointer-events: auto
+
+    .dialog-empty-state
+        @apply flex h-full w-full items-center justify-center p-6 text-center
+
+    .apt-types
+        @apply bg-Utility/gray-50 p-5 flex flex-col gap-2 w-full
+        li
+            @apply flex justify-between pb-2 border-b border-dashed border-Utility/gray-800
+            .apt-color
+                @apply w-8 h-8 rounded-full
+            .apt-name
+                @apply body-2 text-Utility/gray-800

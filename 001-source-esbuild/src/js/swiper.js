@@ -139,10 +139,24 @@ function initAptSwipers (root) {
 	$swipers.each(function () {
 		if (this.swiper) return;
 
+		const swiperElement = this;
 		const $controls = $(this).parent();
-		new Swiper(this, {
+		const updateRoomButton = (swiper) => {
+			const dialog = swiperElement.closest("#roomListA, #roomListB");
+			const panel = swiperElement.closest(".dialog-floor-panel");
+			if (!dialog || !panel?.classList.contains("active")) return;
+
+			const roomCode = swiper.slides[swiper.activeIndex]?.dataset.roomCode || "";
+			const button = dialog.querySelector("[data-emerald-dialog-3-button]");
+			if (button && roomCode) button.dataset.roomCode = roomCode;
+			dialog.querySelectorAll(".dialog-room-note").forEach((note) => {
+				note.hidden = note.dataset.roomCode !== roomCode;
+			});
+		};
+		const swiper = new Swiper(this, {
 			modules: [Navigation],
 			slidesPerView: 1,
+			initialSlide: Number(this.dataset.initialSlide) || 0,
 			speed: 1000,
 			spaceBetween: 10,
 			observer: true,
@@ -151,7 +165,12 @@ function initAptSwipers (root) {
 				nextEl: $controls.find(".btn-next")[0],
 				prevEl: $controls.find(".btn-prev")[0],
 			},
+			on: {
+				init: updateRoomButton,
+				slideChange: updateRoomButton,
+			},
 		});
+		swiper.updateRoomButton = () => updateRoomButton(swiper);
 	});
 }
 

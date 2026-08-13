@@ -37,9 +37,15 @@
     ]
 
 section#project-info.section-home-info
-    div(class="relative h-[calc(1620/1920*100rem)] overflow-hidden flex items-end")
-        div(class="absolute inset-0 -z-10")
-            +PugImg("./img/project-bg.png")(class="h-full w-full object-cover")
+    div(class="relative overflow-hidden flex items-end bg-Primary/1 h-[calc(1620/1920*100rem)] ")
+        div(class="absolute inset-0 pointer-events-none")
+            +PugImg("./img/info-bg-1.png")(class="h-full w-full object-cover object-[55%_center] lg:object-[60%_center]")
+        div(class="top-bg-1")
+        div(class="absolute inset-0 xl:left-[5%]")
+            +PugImg("./img/project.png")(class="h-full w-full object-cover xl:object-contain ")
+        div(class="bot-bg-1")
+        div(class="absolute left-0 bottom-0 w-[30%] h-[30%] pointer-events-none")
+            +PugImg("./img/project-bg.svg")(class="w-full h-full object-cover")
         div(class="flex flex-col w-full pb-15 items-start gap-3")
             div(class="container heading-1 text-Utility/white uppercase text-typing") Thông tin dự án
             ul(class="flex flex-col items-start w-full")

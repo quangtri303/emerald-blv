@@ -1,4 +1,11 @@
 .section-home-info
+    .top-bg-1
+        @apply h-1/2 w-full -top-2 absolute
+        background: linear-gradient(180deg, #016048 5.09%, #04634B 10.31%, #0F6B54 15.69%, #1E715B 21.06%, #3F8674 31.81%, rgba(96, 164, 147, 0.80) 46.01%, rgba(255, 251, 227, 0.00) 100%)
+        filter: blur(calc(4.75/1920*100rem))
+    .bot-bg-1
+        @apply absolute inset-0
+        background: linear-gradient(180deg, rgba(1, 44, 33, 0.00) 33.02%, rgba(1, 44, 33, 0.10) 40.23%, rgba(1, 44, 33, 0.76) 57.27%, #012C21 66.3%)
     .info-wrapper
         @apply border-t border-Utility/white/15 py-1 md:pt-4 md:pb-3 w-full text-Utility/white
         .info

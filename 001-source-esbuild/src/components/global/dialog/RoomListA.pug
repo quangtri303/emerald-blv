@@ -1,0 +1,35 @@
+include ../../mixin.pug
+
+-
+    var floors = [
+        { label: "Tầng 6", rooms: ["a01", "a02"] },
+        { label: "Tầng 7 - 19", rooms: ["a03", "a04"] },
+        { label: "Tầng 21 - 39", rooms: ["a05", "a06"] },
+    ]
+dialog#roomListA(open class="roomlist h-full w-full p-0 bg-Primary/1")
+    div(class="container h-full w-full flex flex-col py-8.5 max-w-[calc(1133/1920*100rem)] justify-center items-center gap-6")
+        div(class="flex flex-col gap-2 justify-center items-center w-full z-10")
+            div(class="heading-1 text-Utility/white uppercase") Tháp A
+            ul.floor-tabs(class="rounded-full border border-Utility/white p-1 relative flex" style=`--floor-count: ${floors.length}`)
+                each floor, index in floors
+                    li.floor(class=index === 0 ? "active" : "" data-floor-index=index)
+                        div=floor.label
+                +SlidingTabBg("floor-bg")
+        div.dialog-floor-stage(class="flex flex-col gap-3 w-full relative")
+            each floor, floorIndex in floors
+                .dialog-floor-panel(class=floorIndex === 0 ? "active" : "" data-floor-panel=floorIndex)
+                    div(class="swiper swiper-apt w-full" data-initial-slide="0")
+                        .swiper-wrapper
+                            each room in floor.rooms
+                                .swiper-slide(data-room-code=room)
+                                    div(class="apt-img-wrapper")
+                                        img(src="./img/lv2-img.png" alt=room)
+                    div(class="md:absolute top-1/2 md:-translate-y-1/2 w-full z-10 flex gap-4 justify-center md:justify-between")
+                        .btn-prev(class="md:translate-x-5 xl:-translate-x-15")
+                            i.fa-light.fa-arrow-left-long
+                        .btn-next(class="md:-translate-x-5 xl:translate-x-15")
+                            i.fa-light.fa-arrow-right-long
+            div(class="body-3 text-Utility/white italic") * Tài liệu và hình ảnh chỉ dùng với mục đích tham khảo.
+        button(type="button" data-emerald-dialog-3-button data-room-code="a01" class="flex gap-2 rounded-full bg-Utility/white text-Primary/1 items-center justify-center px-6 body-1 h-12 hover:bg-Primary/3 transition-colors duration-300")
+            div Hình ảnh nhà mẫu
+            i.fa-light.fa-arrow-right-long

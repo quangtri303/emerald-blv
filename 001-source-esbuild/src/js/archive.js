@@ -25,10 +25,16 @@ export function archiveInit() {
 		const next = slider.querySelector("[data-archive-next]");
 		const progress = slider.querySelector(".archive-pagination-fill");
 		const current = slider.querySelector(".archive-pagination-current");
+		const shouldLoop = slider.dataset.loop !== "false";
 		let activeIndex = 0;
 		let pointerStart = null;
 
 		if (!slides.length) return;
+
+		const normalizeIndex = (index) => {
+			if (!shouldLoop) return Math.max(0, Math.min(index, slides.length - 1));
+			return (index % slides.length + slides.length) % slides.length;
+		};
 
 		const readWidth = (name) => parseFloat(getComputedStyle(section).getPropertyValue(name)) || 100;
 
@@ -40,7 +46,7 @@ export function archiveInit() {
 		};
 
 		const update = (index, animate = true) => {
-			activeIndex = Math.max(0, Math.min(index, slides.length - 1));
+			activeIndex = normalizeIndex(index);
 			const activeWidth = `${readWidth("--archive-active-width")}%`;
 			const inactiveWidth = `${readWidth("--archive-inactive-width")}%`;
 			const duration = animate ? .65 : 0;
@@ -71,8 +77,8 @@ export function archiveInit() {
 			});
 
 			current.textContent = String(activeIndex + 1).padStart(2, "0");
-			prev.classList.toggle("disabled", activeIndex === 0);
-			next.classList.toggle("disabled", activeIndex === slides.length - 1);
+			prev.classList.toggle("disabled", !shouldLoop && activeIndex === 0);
+			next.classList.toggle("disabled", !shouldLoop && activeIndex === slides.length - 1);
 		};
 
 		prev.addEventListener("click", () => update(activeIndex - 1));

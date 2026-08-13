@@ -18,7 +18,7 @@ section#gallery.section-home-archive
                             div Tài liệu
                         +SlidingTabBg("archive-bg")
                 div(class="archive-slider-shell w-full xl:flex-[1_0_0] fade-left")
-                    .archive-slider
+                    .archive-slider(data-loop="true")
                         .archive-slider-viewport
                             .archive-slider-track
                                 each img, index in imgs

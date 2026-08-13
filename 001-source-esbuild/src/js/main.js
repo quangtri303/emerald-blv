@@ -8,13 +8,27 @@ import {
   stickElementToEdge,
 } from "./helper";
 import { header } from "./header";
-import { initDialogSwiper, swiperInit } from "./swiper";
+import { swiperInit } from "./swiper";
 import { amenityInit } from "./amenity";
 import { overviewInit } from "./overview";
 import { archiveInit } from "./archive";
-import { lv3Init } from "./lv3";
+import {
+  initializeDialogContent,
+  openFloorPlanA,
+  openFloorPlanB,
+  openRoomListA,
+  openRoomListB,
+  openRoomDetail,
+} from "./floorplan-dialog";
 import { introVideoInit } from "./intro-video";
 import initAnimation, { splitTextAnimation } from "./animation";
+
+window.openFloorPlanA = openFloorPlanA;
+window.openFloorPlanB = openFloorPlanB;
+window.openRoomListA = openRoomListA;
+window.openRoomListB = openRoomListB;
+window.openRoomDetail = openRoomDetail;
+
 $(document).ready(function () {
   introVideoInit();
   setBackgroundElement();
@@ -31,8 +45,7 @@ $(document).ready(function () {
     window.Fancybox.bind("[data-fancybox]", {
       on: {
         done: function (fancybox, slide) {
-          initDialogSwiper(slide?.$content);
-          lv3Init(slide?.$content);
+          initializeDialogContent(slide?.$content);
         },
       },
     });
