@@ -46,8 +46,8 @@ section#project-info.section-home-info
         div(class="bot-bg-1")
         div(class="absolute left-0 bottom-0 w-[30%] h-[30%] pointer-events-none")
             +PugImg("./img/project-bg.svg")(class="w-full h-full object-cover")
-        div(class="flex flex-col w-full pb-15 items-start gap-3")
-            div(class="container heading-1 text-Utility/white uppercase text-typing") Thông tin dự án
+        div(class="flex flex-col w-full pb-15 items-start gap-3 z-10")
+            h2(class="container heading-1 text-Utility/white uppercase text-typing") Thông tin dự án
             ul(class="flex flex-col items-start w-full")
                 each item, index in info
                     li.info-wrapper

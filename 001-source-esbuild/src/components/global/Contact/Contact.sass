@@ -6,9 +6,11 @@
     .wpcf7-form
         @apply w-full
     .frm-submit
-        @apply mx-auto
+        @apply mx-auto mt-3 xl:mt-5.5 cursor-pointer select-none
         .wpcf7-submit
             @apply w-auto h-auto
+        i
+            @apply pointer-events-none
     .contact-form
         @apply grid grid-cols-1 lg:grid-cols-2 gap-2 w-full
         .form-col
@@ -25,4 +27,3 @@
                 @apply h-25 lg:h-full w-full bg-transparent focus:outline-none
                 &::placeholder
                     @apply text-Utility/white
-

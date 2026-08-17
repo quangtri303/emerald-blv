@@ -30,7 +30,7 @@
 section#news.section-news
     .section-py
         div(class="container-fluid flex flex-col gap-4 xl:gap-10")
-            div(class="heading-1 text-Primary/1 uppercase self-stretch text-center text-typing") Tin tức
+            h2(class="heading-1 text-Primary/1 uppercase self-stretch text-center text-typing") Tin tức
             .swiper.swiper-news.w-full.fade-up
                 .swiper-wrapper
                     each item in news
@@ -40,7 +40,7 @@ section#news.section-news
                                     +PugImg(item.img)(class="w-full h-full object-cover")
                                 .news-info
                                     .news-date=item.date
-                                    .news-title=item.title
+                                    h3.news-title=item.title
             div(class="w-full flex gap-3 justify-center")
                 .btn-prev
                     i.fa-light.fa-arrow-left-long

@@ -36,9 +36,9 @@ export function lv3Init (root = document) {
 		const slides = Array.from(track.querySelectorAll(".lv3-slide"));
 		let activeIndex = initialIndex;
 		let activePosition = initialIndex + cloneCount;
-		let pointerStart = null;
 		let isAnimating = false;
 		let transitionTimer = null;
+		let pointerStart = null;
 
 		const formatSlideNumber = (number) => String(number).padStart(2, "0");
 		const readWidth = (name, fallback) => parseFloat(getComputedStyle(slider).getPropertyValue(name)) || fallback;
@@ -100,6 +100,23 @@ export function lv3Init (root = document) {
 			moveTo(activePosition + direction);
 		};
 
+		viewport.addEventListener("pointerdown", (event) => {
+			pointerStart = event.clientX;
+		});
+
+		viewport.addEventListener("pointerup", (event) => {
+			if (pointerStart === null) return;
+
+			const distance = event.clientX - pointerStart;
+			if (Math.abs(distance) > 40) moveBy(distance < 0 ? 1 : -1);
+
+			pointerStart = null;
+		});
+
+		viewport.addEventListener("pointercancel", () => {
+			pointerStart = null;
+		});
+
 		const handleControlClick = (event, direction) => {
 			event.preventDefault();
 			event.stopPropagation();
@@ -117,16 +134,6 @@ export function lv3Init (root = document) {
 			if (event.target === track && event.propertyName === "transform") normalizePosition();
 		});
 
-		viewport.addEventListener("pointerdown", (event) => {
-			pointerStart = event.clientX;
-		});
-		viewport.addEventListener("pointerup", (event) => {
-			if (pointerStart === null) return;
-			const distance = event.clientX - pointerStart;
-			if (Math.abs(distance) > 40) moveBy(distance < 0 ? 1 : -1);
-			pointerStart = null;
-		});
-		viewport.addEventListener("pointercancel", () => { pointerStart = null; });
 		window.addEventListener("resize", () => {
 			clearTimeout(transitionTimer);
 			isAnimating = false;

@@ -141,16 +141,21 @@ function initAptSwipers (root) {
 
 		const swiperElement = this;
 		const $controls = $(this).parent();
+		const updateNavigationState = (swiper) => {
+			$controls.find(".btn-prev").toggleClass("disabled", swiper.isBeginning);
+			$controls.find(".btn-next").toggleClass("disabled", swiper.isEnd);
+		};
 		const updateRoomButton = (swiper) => {
+			updateNavigationState(swiper);
 			const dialog = swiperElement.closest("#roomListA, #roomListB");
 			const panel = swiperElement.closest(".dialog-floor-panel");
 			if (!dialog || !panel?.classList.contains("active")) return;
 
-			const roomCode = swiper.slides[swiper.activeIndex]?.dataset.roomCode || "";
+			const roomId = swiper.slides[swiper.activeIndex]?.dataset.roomId || swiper.slides[swiper.activeIndex]?.dataset.roomCode || "";
 			const button = dialog.querySelector("[data-emerald-dialog-3-button]");
-			if (button && roomCode) button.dataset.roomCode = roomCode;
+			if (button && roomId) button.dataset.roomId = roomId;
 			dialog.querySelectorAll(".dialog-room-note").forEach((note) => {
-				note.hidden = note.dataset.roomCode !== roomCode;
+				note.hidden = (note.dataset.roomId || note.dataset.roomCode) !== roomId;
 			});
 		};
 		const swiper = new Swiper(this, {
@@ -158,6 +163,7 @@ function initAptSwipers (root) {
 			slidesPerView: 1,
 			initialSlide: Number(this.dataset.initialSlide) || 0,
 			speed: 1000,
+			allowTouchMove: true,
 			spaceBetween: 10,
 			observer: true,
 			observeParents: true,

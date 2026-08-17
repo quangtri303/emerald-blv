@@ -3,11 +3,11 @@ section#location.section-home-location
         div(class="container-fluid flex justify-center xl:justify-end z-10 relative")
             div(class="flex flex-col gap-5 w-full md:flex-row xl:flex-col xl:max-w-[calc(622/1920*100rem)] justify-center items-center")
                 div(class="flex flex-col gap-4 xl:gap-10 md:w-1/2 xl:w-auto")
-                    div(class="flex flex-col gap-3 self-stretch text-center text-typing")
+                    h2(class="flex flex-col gap-3 self-stretch text-center text-typing")
                         div(class="heading-1 text-Primary/1") VỊ TRÍ CỬA NGÕ
                         div(class="heading-1 text-Primary/1") TỌA ĐỘ
                             span(class="text-Primary/4") Vàng
-                    div(class="body-2 text-Utility/gray-800 text-center text-typing-word") Sở hữu vị trí đắt giá trên “cung đường vàng” Quốc lộ 13, The Emerald Boulevard trở thành tâm điểm kết nối của toàn khu vực. Chỉ trong vài phút di chuyển, cư dân dễ dàng tiếp cận trường học, bệnh viện, trung tâm thương mại và các dịch vụ thiết yếu, đồng thời kết nối nhanh đến TP.HCM và các trung tâm kinh tế trọng điểm, đưa mọi tiện ích đến gần hơn với cuộc sống thường ngày. 
+                    div(class="body-2 text-Utility/gray-800 text-center fade-up") Sở hữu vị trí đắt giá trên “cung đường vàng” Quốc lộ 13, The Emerald Boulevard trở thành tâm điểm kết nối của toàn khu vực. Chỉ trong vài phút di chuyển, cư dân dễ dàng tiếp cận trường học, bệnh viện, trung tâm thương mại và các dịch vụ thiết yếu, đồng thời kết nối nhanh đến TP.HCM và các trung tâm kinh tế trọng điểm, đưa mọi tiện ích đến gần hơn với cuộc sống thường ngày. 
                 div(class="w-full flex items-center justify-center flex-col md:w-1/2 xl:w-auto")
                     div(class="w-full flex items-center justify-center p-6.5 relative")
                         div(class="location-border absolute top-0 -bottom-0.5 left-0 w-1/2 select-none")
@@ -45,10 +45,11 @@ section#location.section-home-location
                                 .location-name Sân bay Tân Sơn Nhất
         div(class="location-graph relative mt-4 w-full xl:absolute xl:bottom-0 xl:left-0 xl:w-[74%] -z-10 fade-left")
             div(class="relative w-full h-[calc(400/1920*100rem)] md:h-[calc(822/1920*100rem)]")
-                +PugImg("./img/map.svg")(class="location-map-asset w-full h-full object-cover")
-                div(class="absolute inset-0")
-                    +PugImg("./img/mainroute.svg")(class="location-map-asset w-full h-full object-cover")
-                div(class="absolute inset-0")
-                    +PugImg("./img/map-dots.svg")(class="location-map-asset w-full h-full object-cover")
+                svg(
+                    class="location-map-asset w-full h-full object-cover"
+                    viewBox="0 0 7491 4200"
+                    preserveAspectRatio="xMidYMid slice"
+                    data-svg-stack="./img/map.svg,./img/mainroute.svg,./img/map-dots.svg"
+                )
                 div(class="absolute top-0 w-full  h-[calc(195/1920*100rem)] bg-gradient-to-b from-[#fff] to-[#ffffff00]")
                 div(class="location-map-mask absolute top-0 right-0 bottom-0 w-[25%] pointer-events-none")

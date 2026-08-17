@@ -17,6 +17,9 @@ dialog.roomlist
     .dialog-floor-stage
         position: relative
 
+    .swiper-apt
+        touch-action: pan-y
+
     .dialog-floor-panel
         position: absolute
         inset: 0
@@ -43,3 +46,11 @@ dialog.roomlist
         @apply absolute top-10 right-10 h-50 w-50 bg-[#29A384] blur-3xl
     .apt-img-wrapper
         @apply img-ratio ratio:pt-[632_1133] rounded-10 overflow-hidden
+
+    .btn-prev,
+    .btn-next
+        &.disabled,
+        &.swiper-button-disabled
+            opacity: .35
+            pointer-events: none
+            cursor: not-allowed

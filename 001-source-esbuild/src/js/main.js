@@ -22,6 +22,7 @@ import {
 } from "./floorplan-dialog";
 import { introVideoInit } from "./intro-video";
 import initAnimation, { splitTextAnimation } from "./animation";
+import { mergeLocationSvgs } from "./mergeSvg";
 
 window.openFloorPlanA = openFloorPlanA;
 window.openFloorPlanB = openFloorPlanB;
@@ -30,6 +31,7 @@ window.openRoomListB = openRoomListB;
 window.openRoomDetail = openRoomDetail;
 
 $(document).ready(function () {
+  mergeLocationSvgs();
   introVideoInit();
   setBackgroundElement();
   stickElementToEdge();
@@ -43,6 +45,7 @@ $(document).ready(function () {
   swiperInit();
   if (window.Fancybox) {
     window.Fancybox.bind("[data-fancybox]", {
+      dragToClose: false,
       on: {
         done: function (fancybox, slide) {
           initializeDialogContent(slide?.$content);

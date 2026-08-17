@@ -22,38 +22,64 @@ function selectFloor (dialog, floorIndex) {
 
 const dialogOpenState = {};
 
+function hideFloorPlanTooltip () {
+	if (!window.ImageMapPro || typeof window.ImageMapPro.hideTooltip !== "function") return;
+
+	const hideTooltip = () => {
+		const result = window.ImageMapPro.hideTooltip("Floor Plan", "Thap A");
+		if (result?.catch) result.catch(() => {});
+	};
+
+	window.setTimeout(hideTooltip, 0);
+}
+
 function openFloorPlan (tower) {
+	hideFloorPlanTooltip();
 	return openDialog(`floorPlan${tower}`, `dialog/FloorPlan${tower}.html`);
 }
 
-function openRoomList (tower, roomName) {
-	return openDialog(`roomList${tower}`, `dialog/RoomList${tower}.html`, roomName);
+function openRoomList (tower, roomId) {
+	return openDialog(`roomList${tower}`, `dialog/RoomList${tower}.html`, roomId);
 }
 
-function openDialog (dialogId, dialogUrl, roomName = "") {
+function openDialog (dialogId, dialogUrl, roomId = "") {
 	const configuredUrl = window.emeraldNamedDialogUrls?.[dialogId] || dialogUrl;
 	const url = new URL(configuredUrl, document.baseURI);
-	const normalizedRoom = String(roomName).toLowerCase().replace(/[^a-z0-9_-]/g, "");
-	if (normalizedRoom) url.searchParams.set("room", normalizedRoom);
+	const normalizedRoomId = String(roomId).trim();
+	if (normalizedRoomId) url.searchParams.set("room", normalizedRoomId);
 	const resolvedUrl = url.toString();
 
 	if (dialogOpenState[dialogId] || document.querySelector(`#${dialogId}`)) return false;
 
 	if (window.Fancybox?.show) {
 		dialogOpenState[dialogId] = true;
-		window.Fancybox.show([{ src: resolvedUrl, type: "ajax" }], {
-			on: {
-				done: function (fancybox, slide) {
-					initializeDialogContent(slide?.$content);
+		const showDialog = () => {
+			window.Fancybox.show([{ src: resolvedUrl, type: "ajax" }], {
+				dragToClose: false,
+				Carousel: {
+					Panzoom: {
+						touch: false,
+					},
 				},
-				destroy: function () {
-					delete dialogOpenState[dialogId];
+				on: {
+					done: function (fancybox, slide) {
+						initializeDialogContent(slide?.$content);
+					},
+					destroy: function () {
+						delete dialogOpenState[dialogId];
+					},
+					error: function () {
+						delete dialogOpenState[dialogId];
+					},
 				},
-				error: function () {
-					delete dialogOpenState[dialogId];
-				},
-			},
-		});
+			});
+		};
+		const isTouchInput = window.matchMedia?.("(pointer: coarse)").matches;
+		if (isTouchInput || "ontouchstart" in window) {
+			window.setTimeout(showDialog, 0);
+		} else {
+			showDialog();
+		}
 		return false;
 	}
 
@@ -162,8 +188,8 @@ export function floorplanDialogInit (root = document) {
 
 		const detailButton = dialog.querySelector("[data-emerald-dialog-3-button]");
 		detailButton?.addEventListener("click", () => {
-			const roomCode = detailButton.dataset.roomCode || "";
-			if (roomCode && typeof window.openRoomDetail === "function") window.openRoomDetail(roomCode);
+			const roomId = detailButton.dataset.roomId || detailButton.dataset.roomCode || "";
+			if (roomId && typeof window.openRoomDetail === "function") window.openRoomDetail(roomId);
 		});
 
 		dialog.dataset.floorplanDialogInitialized = "true";
@@ -178,14 +204,14 @@ export function openFloorPlanB () {
 	return openFloorPlan("B");
 }
 
-export function openRoomListA (roomName) {
-	return openRoomList("A", roomName);
+export function openRoomListA (roomId) {
+	return openRoomList("A", roomId);
 }
 
-export function openRoomListB (roomName) {
-	return openRoomList("B", roomName);
+export function openRoomListB (roomId) {
+	return openRoomList("B", roomId);
 }
 
-export function openRoomDetail (roomName) {
-	return openDialog("roomDetail", "dialog/RoomDetail.html", roomName);
+export function openRoomDetail (roomId) {
+	return openDialog("roomDetail", "dialog/RoomDetail.html", roomId);
 }
